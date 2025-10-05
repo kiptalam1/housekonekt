@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" role="img" aria-labelledby="hkFavTitle">
+  <title id="hkFavTitle">HouseKonekt favicon</title>
+  <style>
+    .p { fill: var(--primary, #1E88FF); }
+    .s { fill: var(--secondary, #F08A4B); }
+    .bg { fill: var(--bg, #FFFFFF); }
+  </style>
+
+  <!-- Round background so the icon reads well on any browser chrome -->
+
+  <rect width="64" height="64" rx="12" ry="12" class="p"/>
+  <!-- simplified house roof in secondary -->
+  <path class="s" d="M16 28 L32 16 L48 28 L48 36 L16 36 Z"/>
+  <!-- small 'K' connector in background color for contrast -->
+  <path class="bg" d="M28 40 L28 28 L32 28 L34 32 L36 28 L40 28 L34 36 L40 40 L36 40 L34 36 L32 40 Z"/>
+</svg>
