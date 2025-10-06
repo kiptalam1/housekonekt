@@ -39,6 +39,9 @@ export const registerUser = async (
 				password: hashedPassword,
 				role,
 			},
+			omit: {
+				password: true,
+			},
 		});
 
 		// now return the response;
