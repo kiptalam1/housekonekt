@@ -1,11 +1,12 @@
 import jwt from "jsonwebtoken";
 import type { NextFunction, Request, Response } from "express";
+import type { Role } from "../../generated/prisma/client.js";
 
 export interface AuthenticatedRequest extends Request {
 	user?:
 		| {
 				userId: string;
-				role: string;
+				role: Role;
 				iat?: number;
 				exp?: number;
 		  }

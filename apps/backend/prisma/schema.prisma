@@ -20,6 +20,7 @@ model User {
   email     String    @unique @db.VarChar(100)
   password  String
   role      Role      @default(USER)
+  refreshToken String?
   createdAt DateTime  @default(now()) @db.Timestamp(6)
   updatedAt DateTime? @default(now()) @db.Timestamp(6)
 }

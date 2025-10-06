@@ -26,3 +26,29 @@ export const generateAccessTokenAndSetCookie = (
 
 	return token;
 };
+
+
+export const generateRefreshTokenAndSetCookie = (
+	_req: Request,
+	res: Response,
+	userId: string,
+	role: Role
+): string => {
+	if (!process.env.REFRESH_SECRET) {
+		throw new Error("REFRESH_SECRET not defined");
+	}
+
+	const refreshToken = jwt.sign({ userId, role }, process.env.REFRESH_SECRET, {
+		expiresIn: "7d",
+	});
+
+	res.cookie("refreshToken", refreshToken, {
+		httpOnly: true,
+		sameSite: isProd ? "strict" : "none",
+		secure: isProd,
+		maxAge: 7 * 24 * 60 * 60 * 1000,
+		partitioned: true,
+	});
+
+	return refreshToken;
+};
