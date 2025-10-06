@@ -1,5 +1,5 @@
 import express, { type Router } from "express";
-import { registerUser } from "../controllers/auth.controllers.js";
+import { registerUser, loginUser } from "../controllers/auth.controllers.js";
 import { validateRegistrationFields } from "../validators/auth.validators.js";
 import { handleValidationErrors } from "../middlewares/validation.middleware.js";
 
@@ -11,5 +11,7 @@ router.post(
 	handleValidationErrors,
 	registerUser
 );
+
+router.post("/login", loginUser);
 
 export default router;

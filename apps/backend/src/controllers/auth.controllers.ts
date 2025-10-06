@@ -1,6 +1,6 @@
 import { PrismaClient, Role } from "../../generated/prisma/client.js";
 import type { Request, Response } from "express";
-import { hashUserPassword } from "../utils/password.utils.js";
+import { comparePasswords, hashUserPassword } from "../utils/password.utils.js";
 
 const prisma = new PrismaClient();
 
@@ -52,6 +52,44 @@ export const registerUser = async (
 	} catch (error) {
 		if (error instanceof Error) {
 			console.error("Error in register_user", error.message);
+		}
+		return res.status(500).json({ error: "Internal server error" });
+	}
+};
+
+export const loginUser = async (
+	req: Request<{}, {}, { email: string; password: string }>,
+	res: Response
+): Promise<Response> => {
+	const { email, password } = req.body;
+
+	try {
+		// check if user has an account;
+		const user = await prisma.user.findUnique({
+			where: { email },
+		});
+		if (!user) {
+			return res
+				.status(400)
+				.json({ error: "User not found. Please create an account" });
+		}
+
+		// if account is present, check if password is correct;
+		const isMatch = await comparePasswords(password, user.password);
+		if (!isMatch) {
+			return res.status(400).json({ error: "Wrong password" });
+		}
+
+		// if all passes, return response;
+		// omit password by destructuring user;
+		const { password: _, ...userWithoutPassword } = user;
+		return res.status(200).json({
+			message: "Logged in successfully",
+			user: userWithoutPassword,
+		});
+	} catch (error) {
+		if (error instanceof Error) {
+			console.error("Error in loginUser", error.message);
 		}
 		return res.status(500).json({ error: "Internal server error" });
 	}
