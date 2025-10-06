@@ -1,8 +1,11 @@
 import { PrismaClient, Role } from "../../generated/prisma/client.js";
 import type { Request, Response } from "express";
 import { comparePasswords, hashUserPassword } from "../utils/password.utils.js";
+import { generateAccessTokenAndSetCookie } from "../middlewares/token.middlewares.js";
 
 const prisma = new PrismaClient();
+
+const isProd = process.env.NODE_ENV !== "production";
 
 export const registerUser = async (
 	req: Request<
@@ -50,8 +53,8 @@ export const registerUser = async (
 			user: newUser,
 		});
 	} catch (error) {
-		if (error instanceof Error) {
-			console.error("Error in register_user", error.message);
+		if (!isProd) {
+			console.error("Error in register_user", error);
 		}
 		return res.status(500).json({ error: "Internal server error" });
 	}
@@ -80,16 +83,23 @@ export const loginUser = async (
 			return res.status(400).json({ error: "Wrong password" });
 		}
 
-		// if all passes, return response;
+		// if all passes, generate token and put it in cookie return response;
+		const accessToken = generateAccessTokenAndSetCookie(
+			req,
+			res,
+			user.id,
+			user.role
+		);
 		// omit password by destructuring user;
 		const { password: _, ...userWithoutPassword } = user;
 		return res.status(200).json({
 			message: "Logged in successfully",
+			accessToken,
 			user: userWithoutPassword,
 		});
 	} catch (error) {
-		if (error instanceof Error) {
-			console.error("Error in loginUser", error.message);
+		if (!isProd) {
+			console.error("Error in loginUser", error);
 		}
 		return res.status(500).json({ error: "Internal server error" });
 	}
