@@ -1,7 +1,12 @@
 import express, { type Router } from "express";
-import { registerUser, loginUser } from "../controllers/auth.controllers.js";
+import {
+	registerUser,
+	loginUser,
+	logoutUser,
+} from "../controllers/auth.controllers.js";
 import { validateRegistrationFields } from "../validators/auth.validators.js";
 import { handleValidationErrors } from "../middlewares/validation.middleware.js";
+import { verifyAuthenticationToken } from "../middlewares/auth.middlewares.js";
 
 const router: Router = express.Router();
 
@@ -13,5 +18,6 @@ router.post(
 );
 
 router.post("/login", loginUser);
+router.post("/logout", verifyAuthenticationToken, logoutUser);
 
 export default router;

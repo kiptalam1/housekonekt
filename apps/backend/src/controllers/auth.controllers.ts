@@ -5,7 +5,7 @@ import { generateAccessTokenAndSetCookie } from "../utils/token.utils.js";
 
 const prisma = new PrismaClient();
 
-const isProd = process.env.NODE_ENV !== "production";
+const isProd = process.env.NODE_ENV === "production";
 
 export const registerUser = async (
 	req: Request<
@@ -103,4 +103,18 @@ export const loginUser = async (
 		}
 		return res.status(500).json({ error: "Internal server error" });
 	}
+};
+
+export const logoutUser = async (
+	_req: Request,
+	res: Response
+): Promise<Response> => {
+	res.clearCookie("accessToken", {
+		httpOnly: true,
+		sameSite: isProd ? "strict" : "none",
+		secure: isProd,
+	});
+	return res.status(200).json({
+		message: "Logged out successfully",
+	});
 };
