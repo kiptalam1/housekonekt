@@ -1,7 +1,7 @@
 import { PrismaClient, Role } from "../../generated/prisma/client.js";
 import type { Request, Response } from "express";
 import { comparePasswords, hashUserPassword } from "../utils/password.utils.js";
-import { generateAccessTokenAndSetCookie } from "../middlewares/token.middlewares.js";
+import { generateAccessTokenAndSetCookie } from "../utils/token.utils.js";
 
 const prisma = new PrismaClient();
 
