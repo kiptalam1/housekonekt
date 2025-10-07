@@ -15,12 +15,41 @@ enum Role {
 }
 
 model User {
-  id        String    @id @default(uuid())
-  username  String    @db.VarChar(50)
-  email     String    @unique @db.VarChar(100)
-  password  String
-  role      Role      @default(USER)
+  id           String     @id @default(uuid())
+  username     String     @db.VarChar(50)
+  email        String     @unique @db.VarChar(100)
+  password     String
+  role         Role       @default(USER)
+  phone        String?    @db.VarChar(20)
+  avatarUrl    String?
+  bio          String?    @db.Text
+  isVerified   Boolean    @default(false)
+  lastLogin    DateTime?
   refreshToken String?
-  createdAt DateTime  @default(now()) @db.Timestamp(6)
-  updatedAt DateTime? @default(now()) @db.Timestamp(6)
+  properties   Property[] // user can have many properties
+  createdAt    DateTime   @default(now()) @db.Timestamp(6)
+  updatedAt    DateTime?  @default(now()) @db.Timestamp(6)
+}
+
+enum Status {
+  AVAILABLE
+  FULL
+}
+
+model Property {
+  id          String    @id @default(uuid())
+  title       String    @db.VarChar(200)
+  price       Float
+  location    String    @db.VarChar(500)
+  units       Int       @db.Integer
+  description String    @db.Text
+  images      String[]
+  type        String    @db.VarChar(50)
+  status      Status    @default(AVAILABLE)
+  amenities   String[]
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime? @updatedAt
+  views       Int       @default(0)
+  ownerId     String // foreign key
+  owner       User      @relation(fields: [ownerId], references: [id], onDelete: Cascade)
 }
