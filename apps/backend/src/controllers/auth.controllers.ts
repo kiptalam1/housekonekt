@@ -133,6 +133,13 @@ export const logoutUser = async (
 		sameSite: isProd ? "strict" : "none",
 		secure: isProd,
 	});
+
+	res.clearCookie("refreshToken", {
+		httpOnly: true,
+		sameSite: isProd ? "strict" : "none",
+		secure: isProd,
+	});
+
 	return res.status(200).json({
 		message: "Logged out successfully",
 	});

@@ -31,25 +31,40 @@ model User {
   updatedAt    DateTime?  @default(now()) @db.Timestamp(6)
 }
 
+enum PropertyType {
+  BEDSITTER
+  STUDIO
+  ONE_BEDROOM
+  TWO_BEDROOM
+  THREE_BEDROOM
+  MAISONETTE
+  TOWNHOUSE
+  BUNGALOW
+  SERVICED_APARTMENT
+  VILLA
+}
+
 enum Status {
   AVAILABLE
   FULL
 }
 
 model Property {
-  id          String    @id @default(uuid())
-  title       String    @db.VarChar(200)
+  id          String       @id @default(uuid())
+  title       String       @db.VarChar(200)
   price       Float
-  location    String    @db.VarChar(500)
-  units       Int       @db.Integer
-  description String    @db.Text
+  location    String       @db.VarChar(500)
+  units       Int          @db.Integer
+  description String       @db.Text
   images      String[]
-  type        String    @db.VarChar(50)
-  status      Status    @default(AVAILABLE)
+  type        PropertyType @default(BEDSITTER)
+  status      Status       @default(AVAILABLE)
   amenities   String[]
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime? @updatedAt
-  views       Int       @default(0)
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime?    @updatedAt
+  views       Int          @default(0)
   ownerId     String // foreign key
-  owner       User      @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  owner       User         @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+
+  @@unique([title, location, ownerId])
 }
