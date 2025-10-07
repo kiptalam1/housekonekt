@@ -49,3 +49,18 @@ export const verifyAuthenticationToken = async (
 		});
 	}
 };
+
+export const isAdminOrOwner = (
+	req: AuthenticatedRequest,
+	res: Response,
+	next: NextFunction
+): Response | void => {
+	const role = req.user?.role;
+	if (role !== "ADMIN" && role !== "OWNER") {
+		return res.status(403).json({
+			message: "Access denied. Only property owners can perform this action.",
+		});
+	}
+
+	return next();
+};
