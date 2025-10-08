@@ -190,3 +190,77 @@ export const getAllProperty = async (
 		return res.status(500).json({ error: "Internal server error" });
 	}
 };
+
+
+export const getSinglePropertyListing = async (
+	req: Request<{ id: string }> & AuthenticatedRequest,
+	res: Response
+): Promise<Response> => {
+	const { id: propertyId } = req.params;
+	const visitorId = req.cookies.visitorId || req.user?.userId;
+	try {
+		// check if user has viewed this property;
+		const existingView = await prisma.propertyView.findFirst({
+			where: {
+				propertyId,
+				visitorId,
+			},
+		});
+
+		if (!existingView) {
+			await prisma.$transaction([
+				prisma.propertyView.create({
+					data: {
+						propertyId,
+						visitorId,
+					},
+				}),
+				// increment property view count;
+				prisma.property.update({
+					where: {
+						id: propertyId,
+					},
+					data: {
+						views: { increment: 1 },
+					},
+				}),
+			]);
+		}
+
+		const property = await prisma.property.findUnique({
+			where: {
+				id: propertyId,
+			},
+			omit: {
+				updatedAt: true,
+			},
+			include: {
+				owner: {
+					omit: {
+						password: true,
+						role: true,
+						lastLogin: true,
+						refreshToken: true,
+						createdAt: true,
+						updatedAt: true,
+					},
+				},
+			},
+		});
+
+		if (!property) {
+			return res.status(404).json({
+				error: "This property no longer exists",
+			});
+		}
+
+		return res.status(200).json({
+			data: property,
+		});
+	} catch (error) {
+		if (isDev) {
+			console.error("Error fetching single property listing", error);
+		}
+		return res.status(500).json({ error: "Internal server error" });
+	}
+};

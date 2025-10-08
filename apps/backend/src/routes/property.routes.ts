@@ -6,6 +6,7 @@ import {
 import {
 	createProperty,
 	getAllProperty,
+	getSinglePropertyListing,
 } from "../controllers/property.controllers.js";
 import { validatePropertyCreationInput } from "../validators/property.validators.js";
 import { handleValidationErrors } from "../middlewares/validation.middleware.js";
@@ -22,5 +23,6 @@ router.post(
 );
 
 router.get("/", getAllProperty);
+router.get("/:id", getSinglePropertyListing);
 
 export default router;
