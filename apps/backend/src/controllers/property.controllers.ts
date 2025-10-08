@@ -118,7 +118,7 @@ type PropertyQueryTypes = {
 };
 
 export const getAllProperty = async (
-	req: Request<{}, {}, {}, PropertyQueryTypes>,
+	req: Request<{}, {}, {}, PropertyQueryTypes> & AuthenticatedRequest,
 	res: Response
 ): Promise<Response | void> => {
 	try {
@@ -129,6 +129,10 @@ export const getAllProperty = async (
 		const skip = (pageNum - 1) * limitNum;
 
 		const filters: Prisma.PropertyWhereInput = {};
+
+		if (!req.user || req.user?.role !== "ADMIN") {
+			filters.deletedAt = null;
+		}
 		if (location) {
 			filters.location = { contains: location, mode: "insensitive" };
 		}
@@ -226,10 +230,14 @@ export const getSinglePropertyListing = async (
 			]);
 		}
 
+		const filters: Prisma.PropertyWhereUniqueInput = { id: propertyId };
+
+		if (req.user?.role !== "ADMIN") {
+			filters.deletedAt = null;
+		}
+
 		const property = await prisma.property.findUnique({
-			where: {
-				id: propertyId,
-			},
+			where: filters,
 			omit: {
 				updatedAt: true,
 			},
@@ -259,6 +267,63 @@ export const getSinglePropertyListing = async (
 	} catch (error) {
 		if (isDev) {
 			console.error("Error fetching single property listing", error);
+		}
+		return res.status(500).json({ error: "Internal server error" });
+	}
+};
+
+export const softDeleteProperty = async (
+	req: AuthenticatedRequest & Request<{ id: string }>,
+	res: Response
+): Promise<Response | void> => {
+	const { id: propertyId } = req.params;
+	const userId = req.user?.userId as string;
+	try {
+		// check if user exists;
+		const user = await prisma.user.findUnique({
+			where: {
+				id: userId,
+			},
+			select: {
+				id: true,
+				role: true,
+			},
+		});
+
+		if (!user) {
+			return res.status(404).json({ error: "User not found" });
+		}
+
+		// check if property exists;
+		const property = await prisma.property.findUnique({
+			where: {
+				id: propertyId,
+				ownerId: userId,
+				deletedAt: null,
+			},
+		});
+
+		if (!property) {
+			return res.status(404).json({ error: "This property no longer exists" });
+		}
+		// a middleware will only allow owners or admin to delete property;
+		// allow delete if property belongs to current user;
+		const propertyDeleted = await prisma.property.update({
+			where: {
+				id: propertyId,
+			},
+			data: {
+				deletedAt: new Date(),
+			},
+		});
+
+		return res.status(200).json({
+			message: "Property deleted successfully",
+			data: propertyDeleted,
+		});
+	} catch (error) {
+		if (isDev) {
+			console.error("Error in deleteProperty", error);
 		}
 		return res.status(500).json({ error: "Internal server error" });
 	}

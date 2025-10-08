@@ -64,3 +64,27 @@ export const isAdminOrOwner = (
 
 	return next();
 };
+
+
+export const attachUserIfAuthenticated = (
+	req: AuthenticatedRequest,
+	_res: Response,
+	next: NextFunction
+) => {
+	const token = req.cookies?.accessToken;
+	if (!token) return next();
+
+	try {
+		if (!process.env.ACCESS_SECRET) {
+			throw new Error("ACCESS_SECRET not defined");
+		}
+		const decoded = jwt.verify(
+			token,
+			process.env.ACCESS_SECRET
+		) as AuthenticatedRequest["user"];
+		req.user = decoded; // attach decoded user { userId, role }
+	} catch {
+		// ignore invalid tokens; route stays public
+	}
+	next();
+};
