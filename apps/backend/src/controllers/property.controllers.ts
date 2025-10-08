@@ -191,7 +191,6 @@ export const getAllProperty = async (
 	}
 };
 
-
 export const getSinglePropertyListing = async (
 	req: Request<{ id: string }> & AuthenticatedRequest,
 	res: Response
