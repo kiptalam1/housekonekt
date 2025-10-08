@@ -50,21 +50,30 @@ enum Status {
 }
 
 model Property {
-  id          String       @id @default(uuid())
-  title       String       @db.VarChar(200)
-  price       Float
-  location    String       @db.VarChar(500)
-  units       Int          @db.Integer
-  description String       @db.Text
-  images      String[]
-  type        PropertyType @default(BEDSITTER)
-  status      Status       @default(AVAILABLE)
-  amenities   String[]
-  createdAt   DateTime     @default(now())
-  updatedAt   DateTime?    @updatedAt
-  views       Int          @default(0)
-  ownerId     String // foreign key
-  owner       User         @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  id           String         @id @default(uuid())
+  title        String         @db.VarChar(200)
+  price        Float
+  location     String         @db.VarChar(500)
+  units        Int            @db.Integer
+  description  String         @db.Text
+  images       String[]
+  type         PropertyType   @default(BEDSITTER)
+  status       Status         @default(AVAILABLE)
+  amenities    String[]
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime?      @updatedAt
+  views        Int            @default(0)
+  ownerId      String // foreign key
+  owner        User           @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  propertyView PropertyView[]
 
   @@unique([title, location, ownerId])
+}
+
+model PropertyView {
+  id         String   @id @default(uuid())
+  propertyId String
+  visitorId  String
+  viewedAt   DateTime @default(now())
+  property   Property @relation(fields: [propertyId], references: [id])
 }
