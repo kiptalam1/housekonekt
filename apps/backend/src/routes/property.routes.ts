@@ -9,9 +9,14 @@ import {
 	getAllProperty,
 	getSinglePropertyListing,
 	softDeleteProperty,
+	updateProperty,
 } from "../controllers/property.controllers.js";
-import { validatePropertyCreationInput } from "../validators/property.validators.js";
+import {
+	validatePropertyCreationInput,
+	validatePropertyUpdateInput,
+} from "../validators/property.validators.js";
 import { handleValidationErrors } from "../middlewares/validation.middleware.js";
+import { upload } from "../middlewares/upload.middlewares.js";
 
 const router = Router();
 
@@ -32,5 +37,13 @@ router.patch(
 	isAdminOrOwner,
 	softDeleteProperty
 );
-
+router.patch(
+	"/:id/update",
+	verifyAuthenticationToken,
+	isAdminOrOwner,
+	upload.array("images", 6),
+	validatePropertyUpdateInput,
+	handleValidationErrors,
+	updateProperty
+);
 export default router;
