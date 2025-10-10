@@ -1,4 +1,4 @@
-import { Prisma } from "../../generated/prisma/client.js";
+import { Prisma, type Property } from "../../generated/prisma/client.js";
 import type { Request, Response } from "express";
 import type { AuthenticatedRequest } from "../middlewares/auth.middlewares.js";
 import {
@@ -116,6 +116,7 @@ type PropertyQueryTypes = {
 	minPrice?: string;
 	maxPrice?: string;
 	status?: "AVAILABLE" | "FULL";
+	search?: string;
 };
 
 export const getAllProperty = async (
@@ -123,11 +124,49 @@ export const getAllProperty = async (
 	res: Response
 ): Promise<Response | void> => {
 	try {
-		const { page, limit, location, type, minPrice, maxPrice, status } =
+		const { page, limit, location, type, minPrice, maxPrice, status, search } =
 			req.query;
 		const pageNum = parseInt(page ?? "1", 10);
 		const limitNum = parseInt(limit ?? "20", 10);
 		const skip = (pageNum - 1) * limitNum;
+
+		type PropertyWithOptionalRank = Property & { rank?: number };
+		if (search && search.trim() !== "") {
+			const searchTerm = search.trim();
+
+			let property: PropertyWithOptionalRank[] = await prisma.$queryRaw<
+				PropertyWithOptionalRank[]
+			>`
+  SELECT "id", "title", "price", "location", "units", "ownerId",
+        "amenities", "createdAt", "description", "images",
+        "status", "updatedAt", "views", "type", "deletedAt",
+        ts_rank_cd(search_vector, plainto_tsquery('english', ${searchTerm})) AS rank
+  FROM "Property"
+  WHERE search_vector @@ plainto_tsquery('english', ${searchTerm})
+  ORDER BY rank DESC, "status" ASC, "createdAt" DESC
+  LIMIT ${limitNum} OFFSET ${skip}`;
+
+			// 2️⃣ Fallback: use 'ILIKE' when FTS yields zero results
+			if (!property || property.length === 0) {
+				property = await prisma.property.findMany({
+					where: {
+						OR: [
+							{ title: { contains: searchTerm, mode: "insensitive" } },
+							{ location: { contains: searchTerm, mode: "insensitive" } },
+							{ description: { contains: searchTerm, mode: "insensitive" } },
+						],
+					},
+					orderBy: [{ status: "asc" }, { createdAt: "desc" }],
+					skip,
+					take: limitNum,
+				});
+			}
+
+			return res.status(200).json({
+				meta: { page: pageNum, skip, limit: limitNum, totalPages: null },
+				data: property,
+			});
+		}
 
 		const filters: Prisma.PropertyWhereInput = {};
 
