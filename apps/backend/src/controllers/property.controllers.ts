@@ -6,6 +6,7 @@ import {
 	PropertyType,
 	Status,
 } from "../../generated/prisma/client.js";
+import cloudinary from "../configs/cloudinary.configs.js";
 
 const prisma = new PrismaClient();
 const isDev = process.env.NODE_ENV === "development";
@@ -325,6 +326,95 @@ export const softDeleteProperty = async (
 		if (isDev) {
 			console.error("Error in deleteProperty", error);
 		}
+		return res.status(500).json({ error: "Internal server error" });
+	}
+};
+
+type InputUpdateTypes = Partial<PropertyInput> & {
+	images?: string[];
+};
+
+export const updateProperty = async (
+	req: AuthenticatedRequest & Request<{ id: string }>,
+	res: Response
+): Promise<Response> => {
+	const userId = req.user?.userId as string;
+	const { id: propertyId } = req.params;
+
+	try {
+		const {
+			title,
+			price,
+			location,
+			units,
+			description,
+			type,
+			amenities,
+			status,
+		}: InputUpdateTypes = req.body;
+
+		// verify user
+		const user = await prisma.user.findUnique({
+			where: { id: userId },
+			select: { id: true },
+		});
+		if (!user)
+			return res.status(404).json({ error: "User not found. Please log in" });
+
+		// verify property ownership
+		const property = await prisma.property.findUnique({
+			where: { id: propertyId },
+		});
+		if (!property || property.ownerId !== userId)
+			return res
+				.status(404)
+				.json({ error: "This property does not exist or you do not own it" });
+
+		// handle new images
+		let imageUrls: string[] = [];
+		if (req.files && Array.isArray(req.files) && req.files.length > 0) {
+			for (const file of req.files as Express.Multer.File[]) {
+				const uploadResult = await new Promise<any>((resolve, reject) => {
+					const stream = cloudinary.uploader.upload_stream(
+						{ folder: "properties" },
+						(error, result) => (error ? reject(error) : resolve(result))
+					);
+					stream.end(file.buffer);
+				});
+				imageUrls.push(uploadResult.secure_url);
+			}
+		}
+
+		const formattedAmenities =
+			Array.isArray(amenities) && amenities.length
+				? amenities
+				: typeof amenities === "string"
+				? amenities.split(",").map((a) => a.trim())
+				: [];
+
+		const data: Prisma.PropertyUpdateInput = {};
+
+		if (title) data.title = title;
+		if (description) data.description = description;
+		if (location) data.location = location;
+		if (price) data.price = Number(price);
+		if (status) data.status = status;
+		if (type) data.type = type;
+		if (units) data.units = Number(units);
+		if (formattedAmenities.length) data.amenities = formattedAmenities;
+		if (imageUrls.length) data.images = imageUrls;
+
+		const updatedProperty = await prisma.property.update({
+			where: { id: propertyId },
+			data,
+		});
+
+		return res.json({
+			message: "Property updated successfully",
+			property: updatedProperty,
+		});
+	} catch (error) {
+		console.error("Error in updateProperty:", error);
 		return res.status(500).json({ error: "Internal server error" });
 	}
 };
