@@ -457,3 +457,56 @@ export const updateProperty = async (
 		return res.status(500).json({ error: "Internal server error" });
 	}
 };
+
+export const getPropertyByOwner = async (
+	req: Request<{ id: string }> & AuthenticatedRequest,
+	res: Response
+): Promise<Response | void> => {
+	const { id: ownerId } = req.params;
+
+	try {
+		// check if owner exists;
+		const owner = await prisma.user.findUnique({
+			where: { id: ownerId },
+			omit: { password: true },
+		});
+
+		if (!owner) {
+			return res.status(404).json({
+				error: "This owner no longer exists",
+			});
+		}
+
+		const property = await prisma.property.findMany({
+			where: {
+				ownerId,
+				deletedAt: null,
+			},
+			orderBy: [
+				{
+					createdAt: "desc",
+				},
+				{
+					status: "asc",
+				},
+			],
+			omit: {
+				units: true,
+				amenities: true,
+				createdAt: true,
+				description: true,
+				updatedAt: true,
+				deletedAt: true,
+			},
+		});
+
+		return res.status(200).json({
+			data: property,
+		});
+	} catch (error) {
+		if (isDev) {
+			console.error("Error getting owner's property", error);
+		}
+		return res.status(500).json({ error: "Internal server error" });
+	}
+};

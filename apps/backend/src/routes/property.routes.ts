@@ -10,6 +10,7 @@ import {
 	getSinglePropertyListing,
 	softDeleteProperty,
 	updateProperty,
+	getPropertyByOwner,
 } from "../controllers/property.controllers.js";
 import {
 	validatePropertyCreationInput,
@@ -46,4 +47,5 @@ router.patch(
 	handleValidationErrors,
 	updateProperty
 );
+router.get("/:id/property", attachUserIfAuthenticated, getPropertyByOwner);
 export default router;
