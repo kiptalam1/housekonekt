@@ -1,3 +1,4 @@
+import crypto from "crypto";
 import jwt from "jsonwebtoken";
 import { PrismaClient, Role } from "../../generated/prisma/client.js";
 import type { Request, Response } from "express";
@@ -7,6 +8,7 @@ import {
 	generateRefreshTokenAndSetCookie,
 } from "../utils/token.utils.js";
 import type { AuthenticatedRequest } from "../middlewares/auth.middlewares.js";
+import { sendEmail } from "../utils/verification.utils.js";
 
 const prisma = new PrismaClient();
 
@@ -52,9 +54,36 @@ export const registerUser = async (
 			},
 		});
 
+		const accountVerificationToken = crypto.randomUUID();
+		await prisma.verificationToken.create({
+			data: {
+				token: accountVerificationToken,
+				userId: newUser.id,
+				expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000), // 24 hours,
+			},
+		});
+
+		const verificationLink = `http://localhost:5000/api/auth/verify/${accountVerificationToken}`;
+		const emailSent = await sendEmail(
+			"onboarding@resend.dev",
+			newUser.email,
+			"Verify your HouseKonekt account",
+			`<h1 style="color: indigo">Welcome to HouseKonekt!</h1>
+				<p>Click the link below to verify your email:</p>
+				<a href="${verificationLink}" style="background: #4f46e5; color: white; padding: 10px 15px; text-decoration: none; border-radius: 8px;" >Verify Account</a>
+				
+			`
+		);
+
+		if (!emailSent) {
+			console.warn(`Verification email failed for user ${newUser.email}`);
+		}
+
 		// now return the response;
 		return res.status(201).json({
-			message: "Account created successfully",
+			message: emailSent
+				? "Account created successfully. Please verify your email."
+				: "Account created, but verification email could not be sent. Try resending.",
 			user: newUser,
 		});
 	} catch (error) {
@@ -215,5 +244,49 @@ export const refreshAccessToken = async (
 				.json({ error: "Refresh token expired. Please login again." });
 		}
 		return res.status(403).json({ error: "Invalid refresh token" });
+	}
+};
+
+export const verifyUserEmail = async (
+	req: Request,
+	res: Response
+): Promise<Response | void> => {
+	try {
+		const { token } = req.params;
+
+		//check if token exists;
+		const record = await prisma.verificationToken.findUnique({
+			where: { token: String(token) },
+		});
+
+		if (!record) {
+			return res.status(400).json({ error: "Invalid or expired token" });
+		}
+
+		// check if token is expired;
+		if (record.expiresAt < new Date()) {
+			await prisma.verificationToken.delete({
+				where: { id: record.id },
+			});
+
+			return res.status(400).json({ error: "Token expired" });
+		}
+
+		// mark user as verified;
+		await prisma.user.update({
+			where: { id: record.userId },
+			data: { isVerified: true },
+		});
+
+		// delete token after successful verification;
+		await prisma.verificationToken.delete({ where: { id: record.id } });
+
+		return res.status(200).json({ message: "Email verified successfully" });
+	} catch (error) {
+		if (!isProd) {
+			console.error("Error verifying user:", error);
+		}
+
+		console.error("Error verifying user:", error);
 	}
 };
