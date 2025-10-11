@@ -103,7 +103,10 @@ export const loginUser = async (
 		);
 		await prisma.user.update({
 			where: { id: user.id },
-			data: { refreshToken },
+			data: {
+				refreshToken,
+				lastLogin: new Date(),
+			},
 		});
 		// omit password by destructuring user;
 		const {
