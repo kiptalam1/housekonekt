@@ -9,20 +9,30 @@ datasource db {
 }
 
 model User {
-  id           String     @id @default(uuid())
-  username     String     @db.VarChar(50)
-  email        String     @unique @db.VarChar(100)
-  password     String
-  role         Role       @default(USER)
-  createdAt    DateTime   @default(now()) @db.Timestamp(6)
-  updatedAt    DateTime?  @default(now()) @db.Timestamp(6)
-  refreshToken String?
-  avatarUrl    String?
-  bio          String?
-  isVerified   Boolean    @default(false)
-  lastLogin    DateTime?
-  phone        String?    @db.VarChar(20)
-  properties   Property[]
+  id                String             @id @default(uuid())
+  username          String             @db.VarChar(50)
+  email             String             @unique @db.VarChar(100)
+  password          String
+  role              Role               @default(USER)
+  createdAt         DateTime           @default(now()) @db.Timestamp(6)
+  updatedAt         DateTime?          @updatedAt @db.Timestamp(6)
+  refreshToken      String?
+  avatarUrl         String?
+  bio               String?
+  isVerified        Boolean            @default(false)
+  lastLogin         DateTime?
+  phone             String?            @db.VarChar(20)
+  properties        Property[]
+  verificationToken verificationToken?
+}
+
+model verificationToken {
+  id        String   @id @default(uuid())
+  token     String   @unique
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    String   @unique
+  createdAt DateTime @default(now())
+  expiresAt DateTime
 }
 
 /// This model contains an expression index which requires additional setup for migrations. Visit https://pris.ly/d/expression-indexes for more info.
