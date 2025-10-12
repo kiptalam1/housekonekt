@@ -12,7 +12,7 @@
   --text: hsl(210 10% 15%);
   --text-muted: hsl(210 10% 40%);
 
-  --primary: hsl(200 80% 40%);   /* Trust blue */
+  --primary: hsl(200, 80%, 40%);   /* Trust blue */
   --secondary: hsl(35 60% 45%);  /* Warm terracotta */
 
   --success: hsl(145 40% 40%);

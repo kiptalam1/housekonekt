@@ -3,10 +3,12 @@
 	"tasks": {
 		"build": {
 			"dependsOn": ["^build"],
-			"outputs": [".next/**", "dist/**", "build/**"]
+			"outputs": ["dist/**", "build/**"]
 		},
 		"dev": {
-			"cache": false
+			"cache": false,
+			"persistent": true,
+			"with": ["backend#dev"]
 		},
 		"lint": {
 			"outputs": []
