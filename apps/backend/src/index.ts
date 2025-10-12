@@ -1,6 +1,7 @@
 import express, { type Request, type Response } from "express";
 import dotenv from "dotenv";
 import cookieParser from "cookie-parser";
+import cors from "cors";
 dotenv.config();
 // functions;
 import authRoutes from "./routes/auth.routes.js";
@@ -16,7 +17,12 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(assignVisitorId);
-
+app.use(
+	cors({
+		origin: ["http://localhost:3000"],
+		credentials: true,
+	})
+);
 // routes;
 app.get("/", (_req: Request, res: Response) => {
 	res.send("Welcome to HouseKonekt");

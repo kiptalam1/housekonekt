@@ -1,5 +1,11 @@
+import PropertyListings from "../components/PropertyListings";
+
 const Home = () => {
-	return <div>Home</div>;
+	return (
+		<div>
+			<PropertyListings />
+		</div>
+	);
 };
 
 export default Home;

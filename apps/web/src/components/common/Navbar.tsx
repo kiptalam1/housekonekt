@@ -4,7 +4,7 @@ import { useTheme } from "../../hooks/useTheme";
 const Navbar = () => {
 	const { theme, toggleTheme } = useTheme();
 	return (
-		<nav className="flex items-center justify-between">
+		<nav className="flex items-center justify-between py-4 h-[80px]">
 			<div className="">
 				<div className="flex items-center gap-2">
 					<HouseWifi color="#1481b8" size={32} strokeWidth={2.5} />
@@ -24,9 +24,9 @@ const Navbar = () => {
 					onClick={() => toggleTheme()}
 					className="cursor-pointer text-gray-700 dark:text-yellow-400 transition-colors duration-300">
 					{theme === "dark" ? (
-						<Sun color="currentColor" />
+						<Sun size={20} color="currentColor" />
 					) : (
-						<Moon color="currentColor" />
+						<Moon size={20} color="currentColor" />
 					)}
 				</div>
 			</div>
