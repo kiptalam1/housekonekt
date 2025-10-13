@@ -1,6 +1,7 @@
 import { House, MapPin } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
-type Property = {
+export type Property = {
 	id: string;
 	title: string;
 	price: number;
@@ -14,6 +15,7 @@ type Property = {
 };
 
 const PropertyCard = (props: Property) => {
+	const navigate = useNavigate();
 	const formattedDate = new Date(
 		props.createdAt.split("T")[0]
 	).toLocaleDateString("en-US", {
@@ -36,7 +38,9 @@ const PropertyCard = (props: Property) => {
   </svg>`);
 
 	return (
-		<div className="w-full max-w-[300px] h-[320px] rounded-xl shadow-md dark:border border-[var(--highlight)] hover:shadow-xl transition-all duration-150 cursor-pointer dark:hover:shadow-[0_0_10px_var(--highlight)]">
+		<div
+			onClick={() => navigate(`/properties/${props.id}`)}
+			className="w-full max-w-[300px] h-[320px] rounded-xl shadow-md dark:border border-[var(--highlight)] hover:shadow-xl transition-all duration-150 cursor-pointer dark:hover:shadow-[0_0_10px_var(--highlight)]">
 			<div className="w-full h-1/2">
 				<img
 					src={props.images[0] ?? PLACEHOLDER_SVG}

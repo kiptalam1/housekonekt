@@ -1,6 +1,8 @@
 import { Routes, Route } from "react-router-dom";
+import { Toaster } from "sonner";
 import Navbar from "./components/common/Navbar";
 import Home from "./pages/Home";
+import PropertyDetails from "./pages/PropertyDetails";
 
 function App() {
 	return (
@@ -8,7 +10,9 @@ function App() {
 			<Navbar />
 			<Routes>
 				<Route path="/" element={<Home />} />
+				<Route path="/properties/:id" element={<PropertyDetails />} />
 			</Routes>
+			<Toaster richColors position="top-center" />
 		</div>
 	);
 }
