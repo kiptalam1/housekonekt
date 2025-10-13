@@ -4,7 +4,7 @@ import Home from "./pages/Home";
 
 function App() {
 	return (
-		<div className="min-h-screen w-full p-6 lg:p-10 bg-[var(--bg)] text-[var(--text)]">
+		<div className="min-h-screen w-full p-6 lg:px-10 bg-[var(--bg)] text-[var(--text)]">
 			<Navbar />
 			<Routes>
 				<Route path="/" element={<Home />} />

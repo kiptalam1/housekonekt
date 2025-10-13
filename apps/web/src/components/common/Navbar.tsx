@@ -4,7 +4,7 @@ import { useTheme } from "../../hooks/useTheme";
 const Navbar = () => {
 	const { theme, toggleTheme } = useTheme();
 	return (
-		<nav className="flex items-center justify-between py-4 h-[80px]">
+		<nav className="flex items-center justify-between py-4 ">
 			<div className="">
 				<div className="flex items-center gap-2">
 					<HouseWifi color="#1481b8" size={32} strokeWidth={2.5} />
