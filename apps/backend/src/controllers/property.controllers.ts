@@ -492,11 +492,18 @@ export const getPropertyByOwner = async (
 			],
 			omit: {
 				units: true,
-				amenities: true,
-				createdAt: true,
 				description: true,
 				updatedAt: true,
-				deletedAt: true,
+			},
+			include: {
+				owner: {
+					omit: {
+						password: true,
+						refreshToken: true,
+						lastLogin: true,
+						updatedAt: true,
+					},
+				},
 			},
 		});
 

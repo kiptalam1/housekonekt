@@ -3,6 +3,7 @@ import { Toaster } from "sonner";
 import Navbar from "./components/common/Navbar";
 import Home from "./pages/Home";
 import PropertyDetails from "./pages/PropertyDetails";
+import PropertyOwner from "./pages/PropertyOwner";
 
 function App() {
 	return (
@@ -10,7 +11,10 @@ function App() {
 			<Navbar />
 			<Routes>
 				<Route path="/" element={<Home />} />
+				<Route path="/home" element={<Home />} />
+
 				<Route path="/properties/:id" element={<PropertyDetails />} />
+				<Route path="/property/:id" element={<PropertyOwner />} />
 			</Routes>
 			<Toaster richColors position="top-center" />
 		</div>

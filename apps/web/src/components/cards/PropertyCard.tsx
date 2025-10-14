@@ -8,7 +8,7 @@ export type Property = {
 	location: string;
 	amenities: string[];
 	createdAt: string;
-	images: string[];
+	images?: string[];
 	status: "AVAILABLE" | "FULL";
 	type: string;
 	deletedAt: string | null;
@@ -43,7 +43,7 @@ const PropertyCard = (props: Property) => {
 			className="w-full max-w-[300px] h-[320px] rounded-xl shadow-md dark:border border-[var(--highlight)] hover:shadow-xl transition-all duration-150 cursor-pointer dark:hover:shadow-[0_0_10px_var(--highlight)]">
 			<div className="w-full h-1/2">
 				<img
-					src={props.images[0] ?? PLACEHOLDER_SVG}
+					src={props.images?.length ? props.images[0] : PLACEHOLDER_SVG}
 					alt={props.title}
 					className="w-full h-full object-cover rounded-xl"
 				/>

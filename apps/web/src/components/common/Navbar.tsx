@@ -1,12 +1,15 @@
 import { HouseWifi, Moon, Sun } from "lucide-react";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import { useTheme } from "../../hooks/useTheme";
 const Navbar = () => {
 	const { theme, toggleTheme } = useTheme();
+	const navigate = useNavigate();
 	return (
 		<nav className="flex items-center justify-between py-4 ">
 			<div className="">
-				<div className="flex items-center gap-2">
+				<div
+					onClick={() => navigate("/")}
+					className="flex items-center gap-2 cursor-pointer">
 					<HouseWifi color="#1481b8" size={32} strokeWidth={2.5} />
 					<h1 className="hidden lg:block text-2xl font-semibold antialiased text-[var(--primary)]">
 						housekonekt

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import api from "../api";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import type { Property } from "../components/cards/PropertyCard";
 import { toast } from "sonner";
 import { Badge, BadgeCheck, Calendar, Eye, X } from "lucide-react";
@@ -37,6 +37,7 @@ const PropertyDetails = () => {
 	const [property, setProperty] = useState<PropertyDetails | null>(null);
 	const [loading, setLoading] = useState(true);
 	const { id: propertyId } = useParams();
+	const navigate = useNavigate();
 
 	useEffect(() => {
 		const fetchProperty = async (id: string | undefined) => {
@@ -57,7 +58,7 @@ const PropertyDetails = () => {
 						? error.message
 						: "Something went wrong. Reload",
 					{
-						icon: <X />,
+						icon: <X size={18} />,
 						action: {
 							label: "Dismiss",
 							onClick: () => toast.dismiss(),
@@ -89,7 +90,8 @@ const PropertyDetails = () => {
 					</h2>
 					{/* images */}
 					<div className="grid grid-cols-[repeat(auto-fit,minmax(200px,300px))] gap-2 justify-center">
-						{property.images.length > 0 &&
+						{property.images &&
+							property.images.length > 0 &&
 							property.images.map((image, idx) => (
 								<img
 									key={idx}
@@ -183,7 +185,9 @@ const PropertyDetails = () => {
 								alt={property.owner.username}
 								className="object-cover w-12 h-12 rounded-full border-2 border-[var(--highlight)]"
 							/>
-							<h4 className="flex items-center gap-1 text-lg flex-wrap underline">
+							<h4
+								onClick={() => navigate(`/property/${property?.ownerId}`)}
+								className="flex items-center gap-1 text-lg flex-wrap underline">
 								{property.owner.username}
 								{property.owner.isVerified ? (
 									<BadgeCheck size={18} color="white" fill="#0f74c5" />
