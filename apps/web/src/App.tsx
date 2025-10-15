@@ -4,6 +4,8 @@ import Navbar from "./components/common/Navbar";
 import Home from "./pages/Home";
 import PropertyDetails from "./pages/PropertyDetails";
 import PropertyOwner from "./pages/PropertyOwner";
+import LoginPage from "./pages/LoginPage";
+import RegisterPage from "./pages/RegisterPage";
 
 function App() {
 	return (
@@ -15,6 +17,8 @@ function App() {
 
 				<Route path="/properties/:id" element={<PropertyDetails />} />
 				<Route path="/property/:id" element={<PropertyOwner />} />
+				<Route path="/auth/login" element={<LoginPage />} />
+				<Route path="/auth/register" element={<RegisterPage />} />
 			</Routes>
 			<Toaster richColors position="top-center" />
 		</div>

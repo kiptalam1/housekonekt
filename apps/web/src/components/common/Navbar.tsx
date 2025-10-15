@@ -18,8 +18,10 @@ const Navbar = () => {
 			</div>
 
 			{/* pages */}
-			<div>
+			<div className="flex items-center justify-between gap-6">
 				<NavLink to="/home">Home</NavLink>
+				<NavLink to="/auth/login">Log In</NavLink>
+				<NavLink to="/auth/register">Sign Up</NavLink>
 			</div>
 
 			<div>

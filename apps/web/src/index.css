@@ -7,7 +7,7 @@
   /* Light mode (default) */
   --bg-dark: hsl(210 20% 95%);
   --bg: hsl(0 0% 100%);
-  --bg-light: hsl(210 25% 98%);
+  --bg-light: hsl(210, 20%, 98%);
 
   --text: hsl(210 10% 15%);
   --text-muted: hsl(210, 10%, 40%);
