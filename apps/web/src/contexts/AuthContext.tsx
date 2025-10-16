@@ -31,6 +31,7 @@ type AuthTypes = {
 		email: string;
 		password: string;
 	}) => Promise<boolean | void>;
+	logout: () => Promise<boolean | void>;
 };
 
 export const AuthContext = createContext<AuthTypes | null>(null);
@@ -58,9 +59,27 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 		}
 	};
 
+	const logout = async () => {
+		try {
+			setLoading(true);
+			const res = (await api.post("/auth/logout")).data;
+			if (!res)
+				throw new Error(res?.error || "Something went wrong. Try again");
+			setUser(null);
+			toast.success(res.message || "Logged out successfully");
+			return true;
+		} catch (error) {
+			console.error("Error in logout", error);
+			toast.error(error instanceof Error ? error.message : "Failed to log out");
+			return false;
+		} finally {
+			setLoading(false);
+		}
+	};
+
 	return (
 		<AuthContext.Provider
-			value={{ user, loading, setLoading, setUser, loginUser }}>
+			value={{ user, loading, setLoading, setUser, loginUser, logout }}>
 			{children}
 		</AuthContext.Provider>
 	);
