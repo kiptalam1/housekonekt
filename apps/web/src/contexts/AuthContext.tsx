@@ -7,6 +7,7 @@ import {
 } from "react";
 import { toast } from "sonner";
 import api from "../api";
+import { AxiosError } from "axios";
 
 type UserType = {
 	id: string;
@@ -63,14 +64,25 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 		try {
 			setLoading(true);
 			const res = (await api.post("/auth/logout")).data;
-			if (!res)
-				throw new Error(res?.error || "Something went wrong. Try again");
+			if (!res) throw new Error("Something went wrong. Try again");
 			setUser(null);
 			toast.success(res.message || "Logged out successfully");
 			return true;
 		} catch (error) {
 			console.error("Error in logout", error);
-			toast.error(error instanceof Error ? error.message : "Failed to log out");
+			if (error instanceof AxiosError) {
+				const message =
+					error.response?.data.error ||
+					error.response?.data.message ||
+					error.message ||
+					"Failed to log out";
+				toast.error(message);
+			} else if (error instanceof Error) {
+				toast.error(error.message);
+			} else {
+				toast.error("Failed to logout");
+			}
+
 			return false;
 		} finally {
 			setLoading(false);

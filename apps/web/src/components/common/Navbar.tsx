@@ -4,8 +4,15 @@ import { useTheme } from "../../hooks/useTheme";
 import { useAuth } from "../../hooks/useAuth";
 const Navbar = () => {
 	const { theme, toggleTheme } = useTheme();
-	const { user } = useAuth();
+	const { user, logout } = useAuth();
 	const navigate = useNavigate();
+
+	const handleLogout = async () => {
+		const success = await logout();
+		if (success) {
+			navigate("/auth/login");
+		}
+	};
 	return (
 		<nav className="flex items-center justify-between py-4 ">
 			<div className="">
@@ -24,7 +31,14 @@ const Navbar = () => {
 				<NavLink to="/home">Home</NavLink>
 				{!user && <NavLink to="/auth/login">Log In</NavLink>}
 				{!user && <NavLink to="/auth/register">Sign Up</NavLink>}
-				{user && <NavLink to="/auth/logout">Log out</NavLink>}
+				{user && (
+					<button
+						type="button"
+						onClick={handleLogout}
+						className="text-red-500 cursor-pointer border border-red-400 rounded-lg px-2 py-1">
+						Log out
+					</button>
+				)}
 			</div>
 
 			<div>
