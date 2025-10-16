@@ -1,8 +1,10 @@
 import { HouseWifi, Moon, Sun } from "lucide-react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { useTheme } from "../../hooks/useTheme";
+import { useAuth } from "../../hooks/useAuth";
 const Navbar = () => {
 	const { theme, toggleTheme } = useTheme();
+	const { user } = useAuth();
 	const navigate = useNavigate();
 	return (
 		<nav className="flex items-center justify-between py-4 ">
@@ -20,8 +22,9 @@ const Navbar = () => {
 			{/* pages */}
 			<div className="flex items-center justify-between gap-6">
 				<NavLink to="/home">Home</NavLink>
-				<NavLink to="/auth/login">Log In</NavLink>
-				<NavLink to="/auth/register">Sign Up</NavLink>
+				{!user && <NavLink to="/auth/login">Log In</NavLink>}
+				{!user && <NavLink to="/auth/register">Sign Up</NavLink>}
+				{user && <NavLink to="/auth/logout">Log out</NavLink>}
 			</div>
 
 			<div>
