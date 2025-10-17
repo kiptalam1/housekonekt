@@ -236,7 +236,7 @@ export const refreshAccessToken = async (
 			},
 		});
 
-		return res.status(200).json({ accessToken: newAccessToken });
+		return res.status(200).json({ accessToken: newAccessToken, user });
 	} catch (error) {
 		if (error instanceof jwt.TokenExpiredError) {
 			return res
