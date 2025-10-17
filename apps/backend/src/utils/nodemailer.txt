@@ -1,0 +1,31 @@
+import nodemailer from "nodemailer";
+
+const transporter = nodemailer.createTransport({
+  service: "gmail",
+  auth: {
+    user: process.env.GMAIL_USER, // your Gmail address
+    pass: process.env.GMAIL_APP_PASSWORD, // your Google App Password
+  },
+});
+
+export const sendEmail = async (
+  from: string,
+  to: string,
+  subject: string,
+  html: string
+): Promise<boolean> => {
+  try {
+    const info = await transporter.sendMail({
+      from: `"HouseKonekt" <${from}>`,
+      to,
+      subject,
+      html,
+    });
+
+    console.log("Email sent:", info.response);
+    return true;
+  } catch (error) {
+    console.error("Email send error:", error);
+    return false;
+  }
+};
