@@ -203,8 +203,9 @@ export const refreshAccessToken = async (
 			where: {
 				id: decoded.userId,
 			},
-			select: {
-				refreshToken: true,
+
+			omit: {
+				password: true,
 			},
 		});
 
@@ -236,7 +237,10 @@ export const refreshAccessToken = async (
 			},
 		});
 
-		return res.status(200).json({ accessToken: newAccessToken, user });
+		return res.status(200).json({
+			accessToken: newAccessToken,
+			user,
+		});
 	} catch (error) {
 		if (error instanceof jwt.TokenExpiredError) {
 			return res

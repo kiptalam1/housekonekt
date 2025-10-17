@@ -1,5 +1,6 @@
 import {
 	createContext,
+	useEffect,
 	useState,
 	type Dispatch,
 	type ReactNode,
@@ -21,6 +22,7 @@ type UserType = {
 	phone?: string;
 	createdAt: string;
 	updatedAt?: string;
+	refreshToken?: string;
 };
 
 type AuthTypes = {
@@ -88,6 +90,36 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 			setLoading(false);
 		}
 	};
+
+	// silently auto-refresh token;
+	const refreshToken = async () => {
+		try {
+			const res = (await api.post("/auth/refresh-token")).data;
+			if (res?.user) {
+				setUser(res.user);
+			}
+			return true;
+		} catch {
+			return false;
+		}
+	};
+
+	// check if session exists once on mount;
+	useEffect(() => {
+		const init = async () => {
+			await refreshToken(); // this auto logs in if refresh-token is present;
+			setLoading(false);
+		};
+		init();
+	}, []);
+
+	useEffect(() => {
+		if (!user) return;
+		const interval = setInterval(() => {
+			refreshToken();
+		}, 10 * 60 * 1000);
+		return () => clearInterval(interval);
+	}, [user]);
 
 	return (
 		<AuthContext.Provider
