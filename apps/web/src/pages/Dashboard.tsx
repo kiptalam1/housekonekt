@@ -2,7 +2,7 @@ import { useState } from "react";
 import CreatePropertyModal from "../components/modals/CreatePropertyModal";
 
 const Dashboard = () => {
-	const [open, setOpen] = useState(true);
+	const [open, setOpen] = useState(false);
 
 	return (
 		<div className="min-h-screen flex flex-col py-4 sm:py-6 gap-5">

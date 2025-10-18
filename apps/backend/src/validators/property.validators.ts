@@ -74,11 +74,10 @@ export const validatePropertyCreationInput = checkSchema({
 				"List the amenities available in your property e.g., parking ",
 		},
 		customSanitizer: {
-			options: (value) => {
+			options: (value) =>
 				Array.isArray(value)
 					? value
-					: value.split(",").map((v: string) => v.trim());
-			},
+					: value.split(",").map((v: string) => v.trim()),
 		},
 	},
 	status: {

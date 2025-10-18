@@ -68,9 +68,11 @@ export const createProperty = async (
 		}
 
 		// else create the property and save to database;
-		const formattedAmenities = Array.isArray(amenities)
-			? amenities
-			: amenities.split(",").map((a) => a.trim());
+		const formattedAmenities =
+			amenities && Array.isArray(amenities)
+				? amenities
+				: amenities.split(",").map((a) => a.trim());
+
 		const newProperty = await prisma.property.create({
 			data: {
 				title,
