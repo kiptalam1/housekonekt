@@ -86,3 +86,11 @@
   --border-muted: oklch(0.2 0.01 240);
   --highlight: oklch(0.25 0.05 240);
 }
+
+.hide-scrollbar {
+  -ms-overflow-style: none;  /* IE + Edge */
+  scrollbar-width: none;     /* Firefox */
+}
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;             /* Chrome, Safari */
+}

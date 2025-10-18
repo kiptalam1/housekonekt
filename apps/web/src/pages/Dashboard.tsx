@@ -9,8 +9,8 @@ const Dashboard = () => {
 			<button
 				type="button"
 				onClick={() => setOpen(true)}
-				className="self-end px-2 py-1 border-2 border-[var(--highlight)] rounded-lg cursor-pointer hover:shadow-[var(--highlight)] text-[var(--primary)]">
-				Create Product
+				className="self-end px-2 py-1 border-2 border-[var(--highlight)] rounded-lg cursor-pointer hover:shadow-[var(--highlight)] text-[var(--primary)] font-bold">
+				Create Property
 			</button>
 			<CreatePropertyModal open={open} close={() => setOpen(false)} />
 		</div>
