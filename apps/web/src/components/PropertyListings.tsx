@@ -50,8 +50,8 @@ const PropertyListings = () => {
 	}, []);
 	return (
 		<section className="py-8">
-			<div className="max-w-7xl mx-auto px-4">
-				<div className="flex flex-wrap gap-5 lg:gap-6 justify-center ">
+			<div className="max-w-7xl mx-auto">
+				<div className="flex flex-wrap gap-5 lg:gap-4 justify-center lg:justify-start">
 					{loading
 						? Array.from({ length: 6 }).map((_, i) => (
 								<PropertyCardSkeleton key={i} />

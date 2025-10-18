@@ -20,7 +20,7 @@ function App() {
 				<Route path="/property/:id" element={<PropertyOwner />} />
 				<Route path="/auth/login" element={<LoginPage />} />
 				<Route path="/auth/register" element={<RegisterPage />} />
-				<Route path="/dashboard" element={<Dashboard />} />
+				<Route path="/dashboard/:id" element={<Dashboard />} />
 			</Routes>
 			<Toaster richColors position="top-center" />
 		</div>

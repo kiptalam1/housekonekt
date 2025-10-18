@@ -32,7 +32,7 @@ const Navbar = () => {
 				{!user && <NavLink to="/auth/login">Log In</NavLink>}
 				{!user && <NavLink to="/auth/register">Sign Up</NavLink>}
 				{user && (user.role === "ADMIN" || user.role === "OWNER") && (
-					<NavLink to="/dashboard">Dashboard</NavLink>
+					<NavLink to={`/dashboard/${user.id}`}>Dashboard</NavLink>
 				)}
 				{user && (
 					<button

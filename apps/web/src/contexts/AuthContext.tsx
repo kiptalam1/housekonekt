@@ -55,7 +55,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 			return true;
 		} catch (error) {
 			console.error("Error in loginUser", error);
-			toast.error(error instanceof Error ? error.message : "Failed to log in");
+			toast.error(
+				error instanceof AxiosError
+					? error?.response?.data.error
+					: error instanceof Error
+					? error.message
+					: "Failed to log in"
+			);
 			return false;
 		} finally {
 			setLoading(false);

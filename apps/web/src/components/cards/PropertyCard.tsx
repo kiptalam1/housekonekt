@@ -49,7 +49,9 @@ const PropertyCard = (props: Property) => {
 				/>
 			</div>
 			<div className="flex items-center justify-between px-3 py-2 mt-2">
-				<h3 className="text-base font-semibold truncate">{props.title}</h3>
+				<h3 className="text-base font-semibold truncate">
+					{props.title.trim().slice(0, 20)}
+				</h3>
 				<span
 					className={`rounded-full px-1 py-0.5 text-xs w-[80px] text-center ${
 						props.status === "AVAILABLE"
@@ -64,13 +66,13 @@ const PropertyCard = (props: Property) => {
 					<House size={12} />
 					{props.type.split("_").join(" ")}
 				</p>
-				<p className="text-sm text-[var(--text-muted)] py-1 flex items-center gap-1">
+				<p className="text-sm text-[var(--text-muted)] py-1 flex items-center gap-1 truncate">
 					<MapPin size={12} />
-					{props.location}
+					{props.location.trim().slice(0, 30)}
 				</p>
 
-				<p className="text-sm text-[var(--text-muted)] py-1">
-					KSh {props.price.toLocaleString("en-KE")}
+				<p className="text-sm text-[var(--text-muted)] py-1 truncate">
+					KSh {props.price.toLocaleString("en-KE").slice(0, 30)}
 				</p>
 				<p className="text-[var(--text-muted)] text-xs py-1">
 					Posted on: {formattedDate}
