@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import CreatePropertyModal from "../components/modals/CreatePropertyModal";
 import api from "../api";
-import type { Property } from "../utils/common.ts";
+import { type Property, formatIsoDate } from "../utils/common.ts";
 import { useNavigate, useParams } from "react-router-dom";
 import {
 	Edit,
@@ -22,6 +22,7 @@ const Dashboard = () => {
 	const [property, setProperty] = useState<Property[] | null>(null);
 	const [fetchingProperty, setFetchingProperty] = useState(true);
 	const [deletingId, setDeletingId] = useState<string | null>(null);
+	const navigate = useNavigate();
 
 	useEffect(() => {
 		const fetchProperty = async (id: string | undefined) => {
@@ -38,13 +39,6 @@ const Dashboard = () => {
 
 		fetchProperty(ownerId);
 	}, [ownerId]);
-
-	const navigate = useNavigate();
-	const formattedDate =
-		property &&
-		new Date(property[0].createdAt.split("T")[0]).toLocaleDateString("en-US", {
-			dateStyle: "medium",
-		});
 
 	const handleDelete = async (id: string) => {
 		try {
@@ -93,8 +87,11 @@ const Dashboard = () => {
 			)}
 			<section className="flex flex-wrap justify-center gap-5 my-5">
 				{property &&
+					property.length > 0 &&
 					property.map((p) => (
-						<div className="w-full max-w-[300px] h-[400px] rounded-xl shadow-md dark:border border-[var(--highlight)] hover:shadow-xl transition-all duration-150  dark:hover:shadow-[0_0_10px_var(--highlight)]">
+						<div
+							key={p.id}
+							className="w-full max-w-[300px] h-[400px] rounded-xl shadow-md dark:border border-[var(--highlight)] hover:shadow-xl transition-all duration-150  dark:hover:shadow-[0_0_10px_var(--highlight)]">
 							<div
 								onClick={() => navigate(`/properties/${p.id}`)}
 								className="cursor-pointer">
@@ -132,7 +129,7 @@ const Dashboard = () => {
 										KSh {p.price.toLocaleString("en-KE").slice(0, 30)}
 									</p>
 									<p className="text-[var(--text-muted)] text-xs py-1">
-										Posted on: {formattedDate}
+										Posted on: {formatIsoDate(p.createdAt)}
 									</p>
 								</div>
 							</div>

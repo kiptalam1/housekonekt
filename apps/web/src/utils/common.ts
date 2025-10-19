@@ -57,3 +57,10 @@ export type Property = {
 		viewedAt: string;
 	};
 };
+
+export function formatIsoDate(iso?: string) {
+	if (!iso) return "—";
+	const d = new Date(iso);
+	if (Number.isNaN(d.getTime())) return "Invalid date";
+	return d.toLocaleDateString("en-US", { dateStyle: "medium" });
+}
