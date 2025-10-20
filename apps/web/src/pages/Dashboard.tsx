@@ -15,6 +15,7 @@ import {
 import { PLACEHOLDER_SVG } from "../utils/common.ts";
 import { toast } from "sonner";
 import { AxiosError } from "axios";
+import UpdatePropertyModal from "../components/modals/UpdatePropertyModal.tsx";
 
 const Dashboard = () => {
 	const [open, setOpen] = useState(false);
@@ -22,7 +23,14 @@ const Dashboard = () => {
 	const [property, setProperty] = useState<Property[] | null>(null);
 	const [fetchingProperty, setFetchingProperty] = useState(true);
 	const [deletingId, setDeletingId] = useState<string | null>(null);
+	const [updatingId, setUpdatingId] = useState<string | null>(null);
 	const navigate = useNavigate();
+
+	const updatedProperty = property?.filter(
+		(p) => p.id === updatingId
+	)[0] as Property;
+
+	console.log("updating", updatedProperty);
 
 	useEffect(() => {
 		const fetchProperty = async (id: string | undefined) => {
@@ -30,6 +38,7 @@ const Dashboard = () => {
 				setFetchingProperty(true);
 				const result = (await api.get(`/properties/${id}/property`)).data;
 				setProperty(result.data);
+				console.log("fetched", result.data);
 			} catch (error) {
 				console.error("Error fetching properties:", error);
 			} finally {
@@ -137,6 +146,10 @@ const Dashboard = () => {
 							<div className="flex items-center justify-between gap-5 px-3 py-2">
 								<button
 									type="button"
+									onClick={() => {
+										setUpdatingId(p.id);
+										setOpen(true);
+									}}
 									aria-label="edit property"
 									className="cursor-pointer">
 									<Edit
@@ -165,6 +178,14 @@ const Dashboard = () => {
 			</section>
 
 			<CreatePropertyModal open={open} close={() => setOpen(false)} />
+			<UpdatePropertyModal
+				open={!!updatingId && open}
+				close={() => {
+					setOpen(false);
+					setUpdatingId(null);
+				}}
+				data={updatedProperty}
+			/>
 		</div>
 	);
 };

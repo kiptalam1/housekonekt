@@ -492,11 +492,7 @@ export const getPropertyByOwner = async (
 					status: "asc",
 				},
 			],
-			omit: {
-				units: true,
-				description: true,
-				updatedAt: true,
-			},
+
 			include: {
 				owner: {
 					omit: {
