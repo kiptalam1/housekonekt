@@ -94,7 +94,7 @@ export const createProperty = async (
 		});
 	} catch (error) {
 		if (isDev) {
-			console.log("Error in createProperty", error);
+			console.error("Error in createProperty", error);
 		}
 		return res.status(500).json({ error: "Internal server error" });
 	}
@@ -413,18 +413,39 @@ export const updateProperty = async (
 
 		// handle new images
 		let imageUrls: string[] = [];
+
 		if (req.files && Array.isArray(req.files) && req.files.length > 0) {
-			for (const file of req.files as Express.Multer.File[]) {
-				const uploadResult = await new Promise<any>((resolve, reject) => {
-					const stream = cloudinary.uploader.upload_stream(
-						{ folder: "properties" },
-						(error, result) => (error ? reject(error) : resolve(result))
-					);
-					stream.end(file.buffer);
-				});
-				imageUrls.push(uploadResult.secure_url);
-			}
+			const files = req.files as Express.Multer.File[];
+
+			// upload concurrently
+			imageUrls = await Promise.all(
+				files.map((file) => {
+					if (!file.buffer)
+						return Promise.reject(new Error("Missing file buffer"));
+					return new Promise<string>((resolve, reject) => {
+						const stream = cloudinary.uploader.upload_stream(
+							{ folder: "properties" },
+							(err, result) => {
+								if (err) return reject(err);
+								if (!result?.secure_url)
+									return reject(new Error("No secure_url returned"));
+								resolve(result.secure_url);
+							}
+						);
+						stream.end(file.buffer);
+					});
+				})
+			);
 		}
+
+		// handle removed/retained images;
+		let existingImages: string[] = [];
+		if (req.body.existingImages) {
+			existingImages = Array.isArray(req.body.existingImages)
+				? req.body.existingImages
+				: [req.body.existingImages];
+		}
+		const finalImages = [...existingImages, ...imageUrls];
 
 		const formattedAmenities =
 			Array.isArray(amenities) && amenities.length
@@ -443,7 +464,7 @@ export const updateProperty = async (
 		if (type) data.type = type;
 		if (units) data.units = Number(units);
 		if (formattedAmenities.length) data.amenities = formattedAmenities;
-		if (imageUrls.length) data.images = imageUrls;
+		if (finalImages.length) data.images = finalImages;
 
 		const updatedProperty = await prisma.property.update({
 			where: { id: propertyId },

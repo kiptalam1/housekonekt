@@ -15,7 +15,9 @@ import {
 import { PLACEHOLDER_SVG } from "../utils/common.ts";
 import { toast } from "sonner";
 import { AxiosError } from "axios";
-import UpdatePropertyModal from "../components/modals/UpdatePropertyModal.tsx";
+import UpdatePropertyModal, {
+	type PropertyAndFilesUpdateTypes,
+} from "../components/modals/UpdatePropertyModal.tsx";
 
 const Dashboard = () => {
 	const [open, setOpen] = useState(false);
@@ -26,26 +28,22 @@ const Dashboard = () => {
 	const [updatingId, setUpdatingId] = useState<string | null>(null);
 	const navigate = useNavigate();
 
-	const updatedProperty = property?.filter(
-		(p) => p.id === updatingId
-	)[0] as Property;
+	const updatedProperty = property?.filter((p) => p.id === updatingId)[0];
 
-	console.log("updating", updatedProperty);
+	const fetchProperty = async (id: string | undefined) => {
+		try {
+			setFetchingProperty(true);
+			const result = (await api.get(`/properties/${id}/property`)).data;
+			setProperty(result.data);
+			console.log("fetched", result.data);
+		} catch (error) {
+			console.error("Error fetching properties:", error);
+		} finally {
+			setFetchingProperty(false);
+		}
+	};
 
 	useEffect(() => {
-		const fetchProperty = async (id: string | undefined) => {
-			try {
-				setFetchingProperty(true);
-				const result = (await api.get(`/properties/${id}/property`)).data;
-				setProperty(result.data);
-				console.log("fetched", result.data);
-			} catch (error) {
-				console.error("Error fetching properties:", error);
-			} finally {
-				setFetchingProperty(false);
-			}
-		};
-
 		fetchProperty(ownerId);
 	}, [ownerId]);
 
@@ -184,7 +182,8 @@ const Dashboard = () => {
 					setOpen(false);
 					setUpdatingId(null);
 				}}
-				data={updatedProperty}
+				data={updatedProperty as PropertyAndFilesUpdateTypes}
+				onUpdated={() => fetchProperty(ownerId)}
 			/>
 		</div>
 	);

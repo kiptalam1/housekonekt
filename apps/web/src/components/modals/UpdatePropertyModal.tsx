@@ -1,120 +1,134 @@
-import { HouseWifi, Plus } from "lucide-react";
+import { HouseWifi, Plus, X } from "lucide-react";
 import { useEffect, useState, type ChangeEvent, type FormEvent } from "react";
 import api from "../../api";
 import { toast } from "sonner";
 import { AxiosError } from "axios";
-import type { Property } from "../../utils/common";
+
+export type PropertyAndFilesUpdateTypes = {
+	id: string;
+	title: string;
+	price: number;
+	location: string;
+	units: number;
+	description: string;
+	amenities: string[];
+	images?: (string | File)[];
+	status: string;
+	type: string;
+};
 
 type UpdatePropertyModalProps = {
 	open: boolean;
 	close: () => void;
-	data: Property;
-};
-
-type FormState = Partial<Omit<Property, "images">> & {
-	images?: (string | File)[];
+	data: PropertyAndFilesUpdateTypes;
+	onUpdated?: () => void;
 };
 
 const UpdatePropertyModal = ({
 	open,
 	close,
 	data,
+	onUpdated,
 }: UpdatePropertyModalProps) => {
-	// <-- IMPORTANT: Partial<Property> | null so we can progressively fill fields
-	const [formData, setFormData] = useState<FormState | null>(null);
+	const [formData, setFormData] = useState<PropertyAndFilesUpdateTypes>(data);
 	const [isUpdating, setIsUpdating] = useState(false);
 
 	useEffect(() => {
 		document.body.style.overflow = open ? "hidden" : "auto";
 	}, [open]);
 
-	// Autofill — amenities is string[] in DB, so use it directly
 	useEffect(() => {
 		if (open && data) {
-			setFormData({
-				...data,
-				amenities: Array.isArray(data.amenities) ? data.amenities : [],
-				// images in DB are string[] (URLs). Local UI may also push File objects.
-				images: data.images ?? [],
-			});
+			setFormData(data);
 		}
 	}, [open, data]);
 
-	const handleChange = (
+	function handleChange(
 		e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
-	) => {
+	) {
 		const { name, value } = e.target;
-		setFormData((prev) =>
-			prev
-				? { ...prev, [name]: value }
-				: ({ [name]: value } as Partial<Property>)
-		);
-	};
+		setFormData((prev) => ({ ...prev, [name]: value }));
+	}
 
-	// Amenities textarea -> string[] conversion (textarea must be string)
-	const handleAmenitiesTextChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
-		const arr = e.target.value
-			.split(",")
-			.map((a) => a.trim())
-			.filter(Boolean);
-		setFormData((prev) =>
-			prev ? { ...prev, amenities: arr } : { amenities: arr }
-		);
-	};
-
-	const handleFiles = (e: ChangeEvent<HTMLInputElement>) => {
-		const files = e.target.files ? Array.from(e.target.files) : [];
+	function handleImageChange(e: ChangeEvent<HTMLInputElement>) {
+		if (!e.target.files) return;
+		const files = Array.from(e.target.files);
 		setFormData((prev) => ({
-			...(prev ?? {}),
-			images: [...(prev?.images ?? []), ...files],
+			...prev,
+			images: [...(prev.images || []), ...files], // Keep old + new images;
 		}));
-	};
+	}
 
-	const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+	function handleRemoveImage(index: number) {
+		setFormData((prev) => ({
+			...prev,
+			images: prev.images?.filter((_, i) => i !== index),
+		}));
+	}
+
+	async function handleSubmit(e: FormEvent<HTMLFormElement>) {
 		e.preventDefault();
-		if (!formData) return;
+		const fd = new FormData();
+
+		(Object.keys(formData) as (keyof PropertyAndFilesUpdateTypes)[]).forEach(
+			(key) => {
+				if (key === "images") return;
+				let value = formData[key];
+				if (key === "amenities") {
+					if (Array.isArray(value)) value = (value as string[]).join(", ");
+					value = String(value ?? "");
+					fd.append(String(key), value);
+					return;
+				}
+				if (Array.isArray(value)) {
+					value = JSON.stringify(value);
+				} else {
+					value = String(value ?? "");
+				}
+				fd.append(key, value);
+			}
+		);
+
+		// loop through images and append each to formData;
+		if (formData.images && formData.images.length > 0) {
+			formData.images.forEach((file) => {
+				if (typeof file === "string") {
+					fd.append("existingImages", file);
+				} else {
+					fd.append("images", file);
+				}
+			});
+		}
 
 		try {
 			setIsUpdating(true);
-
-			const fd = new FormData();
-
-			if (formData.title != null) fd.append("title", String(formData.title));
-			if (formData.price != null) fd.append("price", String(formData.price));
-			if (formData.location != null)
-				fd.append("location", String(formData.location));
-			if (formData.units != null) fd.append("units", String(formData.units));
-			if (formData.description != null)
-				fd.append("description", String(formData.description));
-			if (formData.type != null) fd.append("type", String(formData.type));
-			if (formData.status != null) fd.append("status", String(formData.status));
-			if (formData.amenities && Array.isArray(formData.amenities)) {
-				fd.append("amenities", (formData.amenities as string[]).join(","));
+			const res = await (
+				await api.patch(`/properties/${data.id}/update`, fd, {
+					headers: {
+						"Content-Type": "multipart/form-data",
+					},
+				})
+			).data;
+			if (!res) {
+				throw new Error("Something went wrong");
 			}
 
-			const imgs = formData.images ?? [];
-			for (const item of imgs) {
-				if (item instanceof File) {
-					fd.append("images", item); // multer will expose in req.files
-				}
-			}
-			const res = await api.patch(`/properties/${data.id}/update`, fd, {
-				headers: { "Content-Type": "multipart/form-data" },
-			});
-
-			toast.success(res.data?.message || "Property updated successfully");
+			toast.success(res.message || "Property updated successfully");
+			onUpdated?.();
 			close();
-		} catch (err) {
-			console.error("Error updating property", err);
+		} catch (error) {
+			console.error("Error in UpdatePropertyModal", error);
 			toast.error(
-				err instanceof AxiosError
-					? err.response?.data?.error
-					: "Failed to update property"
+				error instanceof AxiosError
+					? error.response?.data.error
+					: error instanceof Error
+					? error.message
+					: "Update failed"
 			);
 		} finally {
 			setIsUpdating(false);
 		}
-	};
+	}
 
 	if (!open) return null;
 
@@ -309,8 +323,12 @@ const UpdatePropertyModal = ({
 						<textarea
 							id="amenities"
 							name="amenities"
-							value={(formData?.amenities ?? []).join(", ")}
-							onChange={handleAmenitiesTextChange}
+							value={
+								Array.isArray(formData?.amenities)
+									? formData?.amenities.join(", ")
+									: formData?.amenities || ""
+							}
+							onChange={handleChange}
 							autoCapitalize="sentences"
 							required
 							maxLength={2000}
@@ -333,7 +351,7 @@ const UpdatePropertyModal = ({
 							type="file"
 							multiple
 							accept="image/*"
-							onChange={handleFiles}
+							onChange={handleImageChange}
 							className="block w-full text-sm text-[var(--text)] mt-1 cursor-pointer border border-[var(--border)] rounded-lg p-2"
 						/>
 					</div>
@@ -343,14 +361,23 @@ const UpdatePropertyModal = ({
 						(formData.images as (string | File)[]).length > 0 && (
 							<div className="flex flex-wrap gap-3 mt-2">
 								{(formData.images as (string | File)[]).map((img, idx) => (
-									<img
-										key={idx}
-										src={
-											typeof img === "string" ? img : URL.createObjectURL(img)
-										}
-										alt={`Property ${idx + 1}`}
-										className="w-20 h-20 object-cover rounded-lg border border-[var(--border)]"
-									/>
+									<div className="relative">
+										<img
+											key={idx}
+											src={
+												typeof img === "string" ? img : URL.createObjectURL(img)
+											}
+											alt={`Property ${idx + 1}`}
+											className="w-20 h-20 object-cover rounded-lg border border-[var(--border)]"
+										/>
+										<button
+											type="button"
+											onClick={() => handleRemoveImage(idx)}
+											className="absolute -top-2 -right-2 rounded-full"
+											aria-label="remove image">
+											<X size={24} color="red" />
+										</button>
+									</div>
 								))}
 							</div>
 						)}
@@ -368,7 +395,7 @@ const UpdatePropertyModal = ({
 						<button
 							type="submit"
 							disabled={isUpdating}
-							className="border border-[var(--info)] px-6 py-1 rounded-lg cursor-pointer text-[var(--primary)] font-bold flex items-center gap-2 justify-center hover:scale-105 transition-all duration-150">
+							className="border border-[var(--info)] px-6 py-1 rounded-lg cursor-pointer text-[var(--primary)] font-bold flex items-center gap-2 justify-center hover:scale-105 transition-all duration-150 disabled:grayscale">
 							{isUpdating ? (
 								<span className="flex items-center justify-center animate-pulse">
 									<HouseWifi size={20} />
