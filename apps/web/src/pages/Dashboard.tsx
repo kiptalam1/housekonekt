@@ -35,7 +35,6 @@ const Dashboard = () => {
 			setFetchingProperty(true);
 			const result = (await api.get(`/properties/${id}/property`)).data;
 			setProperty(result.data);
-			console.log("fetched", result.data);
 		} catch (error) {
 			console.error("Error fetching properties:", error);
 		} finally {

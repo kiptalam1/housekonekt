@@ -361,7 +361,7 @@ const UpdatePropertyModal = ({
 						(formData.images as (string | File)[]).length > 0 && (
 							<div className="flex flex-wrap gap-3 mt-2">
 								{(formData.images as (string | File)[]).map((img, idx) => (
-									<div className="relative">
+									<div key={idx} className="relative">
 										<img
 											key={idx}
 											src={
