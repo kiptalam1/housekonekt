@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import api from "../api";
 import { toast } from "sonner";
-import { BadgeCheck, X, Badge } from "lucide-react";
+import { BadgeCheck, X, Badge, ArrowDown } from "lucide-react";
 import PropertyCard from "../components/cards/PropertyCard";
 import { AVATAR_PLACEHOLDER_SVG } from "../utils/common";
 
@@ -31,8 +31,6 @@ type OwnerPropertyData = {
 		phone?: string;
 	};
 };
-
-
 
 const PropertyOwner = () => {
 	const [propertyData, setPropertyData] = useState<OwnerPropertyData[] | null>(
@@ -126,6 +124,10 @@ const PropertyOwner = () => {
 						</div>
 					</div>
 
+					<h3 className="flex items-center gap-2 text-lg text-[var(--info)] italic underline underline-offset-3 opacity-80">
+						{landlord?.username} property
+						<ArrowDown size={24} />
+					</h3>
 					<div className="flex flex-wrap gap-6 justify-center md:justify-start">
 						{propertyData.map((p) => (
 							<PropertyCard key={p.id} {...p} />

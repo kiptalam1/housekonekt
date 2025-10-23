@@ -18,7 +18,7 @@ function App() {
 				<Route path="/home" element={<Home />} />
 
 				<Route path="/properties/:id" element={<PropertyDetails />} />
-				<Route path="/property/:id" element={<PropertyOwner />} />
+				<Route path="/property/:id/owner" element={<PropertyOwner />} />
 				<Route path="/auth/login" element={<LoginPage />} />
 				<Route path="/auth/register" element={<RegisterPage />} />
 				<Route path="/dashboard/:id" element={<Dashboard />} />

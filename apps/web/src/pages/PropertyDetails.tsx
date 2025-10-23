@@ -186,7 +186,7 @@ const PropertyDetails = () => {
 								className="object-cover w-12 h-12 rounded-full border-2 border-[var(--highlight)]"
 							/>
 							<h4
-								onClick={() => navigate(`/property/${property?.ownerId}`)}
+								onClick={() => navigate(`/property/${property?.ownerId}/owner`)}
 								className="flex items-center gap-1 text-lg flex-wrap underline">
 								{property.owner.username}
 								{property.owner.isVerified ? (
