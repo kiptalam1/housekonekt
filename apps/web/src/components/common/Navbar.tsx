@@ -34,6 +34,7 @@ const Navbar = () => {
 				{user && (user.role === "ADMIN" || user.role === "OWNER") && (
 					<NavLink to={`/dashboard/${user.id}`}>Dashboard</NavLink>
 				)}
+				{user && <NavLink to={"/user/me"}>My Profile</NavLink>}
 				{user && (
 					<button
 						type="button"

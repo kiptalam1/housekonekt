@@ -13,6 +13,18 @@ export const PLACEHOLDER_SVG =
     </text>
   </svg>`);
 
+
+export const AVATAR_PLACEHOLDER_SVG =
+	"data:image/svg+xml;utf8," +
+	encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128">
+  <rect width="100%" height="100%" fill="#f3f4f6"/>
+  <circle cx="64" cy="48" r="24" fill="#d1d5db"/>
+  <path d="M16 112c0-22.09 19.91-40 48-40s48 17.91 48 40" fill="#e5e7eb"/>
+  <text x="50%" y="122" font-family="Inter,Arial" font-size="10" font-weight="600" fill="#9ca3af" text-anchor="middle">
+    No Image
+  </text>
+</svg>`);
+
 export type Property = {
 	id: string;
 	title: string;

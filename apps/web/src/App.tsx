@@ -7,6 +7,7 @@ import PropertyOwner from "./pages/PropertyOwner";
 import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
 import Dashboard from "./pages/Dashboard";
+import MyProfile from "./pages/MyProfile";
 
 function App() {
 	return (
@@ -21,6 +22,7 @@ function App() {
 				<Route path="/auth/login" element={<LoginPage />} />
 				<Route path="/auth/register" element={<RegisterPage />} />
 				<Route path="/dashboard/:id" element={<Dashboard />} />
+				<Route path="/user/me" element={<MyProfile />} />
 			</Routes>
 			<Toaster richColors position="top-center" />
 		</div>
