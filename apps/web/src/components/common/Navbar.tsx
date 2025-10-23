@@ -2,6 +2,9 @@ import { HouseWifi, Moon, Sun } from "lucide-react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { useTheme } from "../../hooks/useTheme";
 import { useAuth } from "../../hooks/useAuth";
+
+
+
 const Navbar = () => {
 	const { theme, toggleTheme } = useTheme();
 	const { user, logout } = useAuth();
@@ -28,13 +31,59 @@ const Navbar = () => {
 
 			{/* pages */}
 			<div className="flex items-center justify-between gap-6">
-				<NavLink to="/home">Home</NavLink>
-				{!user && <NavLink to="/auth/login">Log In</NavLink>}
-				{!user && <NavLink to="/auth/register">Sign Up</NavLink>}
-				{user && (user.role === "ADMIN" || user.role === "OWNER") && (
-					<NavLink to={`/dashboard/${user.id}`}>Dashboard</NavLink>
+				<NavLink
+					to="/home"
+					className={({ isActive }) =>
+						isActive
+							? "text-[var(--primary)] font-bold text-xl underline underline-offset-2"
+							: "text-base"
+					}>
+					Home
+				</NavLink>
+				{!user && (
+					<NavLink
+						to="/auth/login"
+						className={({ isActive }) =>
+							isActive
+								? "text-[var(--primary)] font-bold text-xl underline underline-offset-2"
+								: "text-base"
+						}>
+						Log In
+					</NavLink>
 				)}
-				{user && <NavLink to={"/user/me"}>My Profile</NavLink>}
+				{!user && (
+					<NavLink
+						to="/auth/register"
+						className={({ isActive }) =>
+							isActive
+								? "text-[var(--primary)] font-bold text-xl underline underline-offset-2"
+								: "text-base"
+						}>
+						Sign Up
+					</NavLink>
+				)}
+				{user && (user.role === "ADMIN" || user.role === "OWNER") && (
+					<NavLink
+						to={`/dashboard/${user.id}`}
+						className={({ isActive }) =>
+							isActive
+								? "text-[var(--primary)] font-bold text-xl underline underline-offset-2"
+								: "text-base"
+						}>
+						Dashboard
+					</NavLink>
+				)}
+				{user && (
+					<NavLink
+						to={"/user/me"}
+						className={({ isActive }) =>
+							isActive
+								? "text-[var(--primary)] font-bold text-xl underline underline-offset-2"
+								: "text-base"
+						}>
+						My Profile
+					</NavLink>
+				)}
 				{user && (
 					<button
 						type="button"
