@@ -10,7 +10,7 @@ import { toast } from "sonner";
 import api from "../api";
 import { AxiosError } from "axios";
 
-type UserType = {
+export type UserType = {
 	id: string;
 	username: string;
 	email: string;

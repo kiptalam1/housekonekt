@@ -17,7 +17,7 @@
 
   --success: hsl(145 40% 40%);
   --warning: hsl(45 100% 50%);
-  --danger: hsl(0 70% 45%);
+  --danger: #c32222;
   --info: hsl(210 60% 45%);
 
   --border: hsl(210 15% 80%);
