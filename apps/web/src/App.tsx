@@ -8,6 +8,7 @@ import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
 import Dashboard from "./pages/Dashboard";
 import MyProfile from "./pages/MyProfile";
+import Messaging from "./pages/Messaging";
 
 function App() {
 	return (
@@ -23,6 +24,7 @@ function App() {
 				<Route path="/auth/register" element={<RegisterPage />} />
 				<Route path="/dashboard/:id" element={<Dashboard />} />
 				<Route path="/user/me" element={<MyProfile />} />
+				<Route path="/owner/messaging" element={<Messaging />} />
 			</Routes>
 			<Toaster richColors position="top-center" />
 		</div>

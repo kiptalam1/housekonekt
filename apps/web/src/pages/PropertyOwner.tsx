@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import api from "../api";
 import { toast } from "sonner";
-import { BadgeCheck, X, Badge, ArrowDown } from "lucide-react";
+import { BadgeCheck, X, Badge, ArrowDown, MessageCircle } from "lucide-react";
 import PropertyCard from "../components/cards/PropertyCard";
 import { AVATAR_PLACEHOLDER_SVG } from "../utils/common";
 
@@ -38,6 +38,7 @@ const PropertyOwner = () => {
 	);
 	const [loading, setLoading] = useState(true);
 	const { id: ownerId } = useParams();
+	const navigate = useNavigate();
 
 	useEffect(() => {
 		let isMounted = true;
@@ -120,6 +121,12 @@ const PropertyOwner = () => {
 							<p className="text-sm text-[var(--text-muted)]">
 								Joined on{" "}
 								{landlord?.createdAt ? landlord.createdAt.split("T")[0] : "-"}
+							</p>
+							<p
+								onClick={() => navigate("/owner/messaging")}
+								className="flex items-center justify-center gap-1 rounded-full bg-[var(--primary)] w-fit px-3 py-1 text-white font-bold cursor-pointer">
+								<MessageCircle size={18} absoluteStrokeWidth />
+								<span className="font-bold">Chat</span>
 							</p>
 						</div>
 					</div>
