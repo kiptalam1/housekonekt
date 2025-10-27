@@ -9,8 +9,9 @@ import RegisterPage from "./pages/RegisterPage";
 import Dashboard from "./pages/Dashboard";
 import MyProfile from "./pages/MyProfile";
 import Messaging from "./pages/Messaging";
-
+import useSocketConnection from "./hooks/useSocketConnection";
 function App() {
+	useSocketConnection();
 	return (
 		<div className="min-h-screen w-full p-6 lg:px-10 bg-[var(--bg)] text-[var(--text)]">
 			<Navbar />

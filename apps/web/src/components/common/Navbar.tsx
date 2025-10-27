@@ -228,6 +228,19 @@ const Navbar = () => {
 				)}
 				{user && (
 					<NavLink
+						to={`/owner/messaging`}
+						className={({ isActive }) =>
+							`hidden sm:block transition-all duration-200 ${
+								isActive
+									? "text-[var(--primary)] font-bold text-xl underline underline-offset-2"
+									: "text-base hover:text-[var(--primary)]"
+							}`
+						}>
+						Chats
+					</NavLink>
+				)}
+				{user && (
+					<NavLink
 						to={"/user/me"}
 						className={({ isActive }) =>
 							`hidden sm:block transition-all duration-200 ${

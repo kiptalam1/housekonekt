@@ -7,8 +7,8 @@ function Sidebar() {
 	// 	setSelected(index);
 	// };
 	return (
-		<div className="flex flex-col w-[250px] overflow-y-auto scroll-smooth border border-[var(--border)] border-b-0">
-			<h2 className="border border-[var(--border)] py-2 h-12 text-center text-2xl font-bold">
+		<div className="flex flex-col w-[250px] overflow-y-auto scroll-smooth border border-[var(--border-muted)] border-b-0">
+			<h2 className="border border-[var(--border-muted)] py-2 h-12 text-center text-2xl font-bold">
 				Chats
 			</h2>
 

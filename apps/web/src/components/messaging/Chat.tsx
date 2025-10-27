@@ -3,7 +3,7 @@ import { SendHorizontal } from "lucide-react";
 function Chat() {
 	return (
 		<div className="flex flex-col flex-1 px-2">
-			<div className="w-full text-xl font-semibold py-2 px-5 h-12 border border-[var(--border)] text-center">
+			<div className="w-full text-xl font-semibold py-2 px-5 h-12 border border-[var(--border-muted)] text-center">
 				evans
 			</div>
 
@@ -21,7 +21,8 @@ function Chat() {
 								e.currentTarget.style.height = "auto";
 								e.currentTarget.style.height = `${e.currentTarget.scrollHeight}px`;
 							}}
-							className="flex-1 w-full resize-none rounded-2xl border border-[var(--border)] bg-[var(--bg-light)] px-4 py-2 text-lg placeholder:text-[var(--text-muted)] placeholder:text-sm placeholder:italic focus:ring-2 focus:ring-[var(--info)] focus:outline-none scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-transparent"></textarea>
+							className="flex-1 w-full resize-none rounded-2xl border border-[var(--border)] bg-[var(--bg-light)] px-4 py-1 text-lg placeholder:text-[var(--text-muted)] placeholder:text-sm placeholder:italic
+							focus:ring-2 focus:ring-[var(--info)] focus:outline-none scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-transparent"></textarea>
 						<button
 							type="submit"
 							aria-label="send message"
