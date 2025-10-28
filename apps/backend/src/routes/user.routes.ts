@@ -7,4 +7,5 @@ const router = express.Router();
 // routes;
 router.get("/me", verifyAuthenticationToken, getMyProfile);
 
+router.get("/:id", verifyAuthenticationToken, getMyProfile);
 export default router;

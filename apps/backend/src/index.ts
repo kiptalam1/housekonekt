@@ -10,10 +10,13 @@ import morgan from "morgan";
 import authRoutes from "./routes/auth.routes.js";
 import propertyRoutes from "./routes/property.routes.js";
 import userRoutes from "./routes/user.routes.js";
+import messageRoutes from "./routes/message.routes.js";
 import { assignVisitorId } from "./middlewares/visitorId.middlewares.js";
+import { handleDMs } from "./socket/DMsHandler.js";
+
 const app = express();
 const httpServer = createServer(app);
-const io = new Server(httpServer, {
+export const io = new Server(httpServer, {
 	cors: {
 		origin: "http://localhost:3000",
 		methods: ["GET", "POST"],
@@ -34,7 +37,7 @@ app.use(
 		credentials: true,
 	})
 );
-app.use(morgan("combined"));
+app.use(morgan("common"));
 // routes;
 app.get("/", (_req: Request, res: Response) => {
 	res.send("Welcome to HouseKonekt");
@@ -43,10 +46,18 @@ app.get("/", (_req: Request, res: Response) => {
 app.use("/api/auth", authRoutes);
 app.use("/api/properties", propertyRoutes);
 app.use("/api/users", userRoutes);
+app.use("/api/messages", messageRoutes);
 
 //socket.io;
 io.on("connection", (socket) => {
 	console.log("user connected:", socket.id);
+
+	socket.on("register", (userId: string) => {
+		console.log(`User registered: ${userId}`);
+		socket.data.userId = userId;
+	});
+
+	handleDMs(io, socket);
 
 	socket.on("disconnect", () => {
 		console.log("socket disconnected:", socket.id);
