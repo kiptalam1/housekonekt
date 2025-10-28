@@ -24,15 +24,35 @@ model User {
   phone             String?            @db.VarChar(20)
   properties        Property[]
   verificationToken verificationToken?
+
+  sentMessages     Message[] @relation("SentMessages")
+  receivedMessages Message[] @relation("ReceivedMessages")
+}
+
+model Message {
+  id         String @id @default(uuid())
+  sender     User   @relation("SentMessages", fields: [senderId], references: [id])
+  senderId   String
+  receiver   User   @relation("ReceivedMessages", fields: [receiverId], references: [id])
+  receiverId String
+
+  content   String
+  createdAt DateTime  @default(now())
+  readAt    DateTime?
+  edited    Boolean   @default(false)
+  deleted   Boolean   @default(false)
+
+  @@index([senderId, receiverId])
+  @@index([createdAt])
 }
 
 model verificationToken {
   id        String   @id @default(uuid())
   token     String   @unique
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId    String   @unique
   createdAt DateTime @default(now())
   expiresAt DateTime
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 /// This model contains an expression index which requires additional setup for migrations. Visit https://pris.ly/d/expression-indexes for more info.
