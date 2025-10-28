@@ -52,15 +52,28 @@ app.use("/api/messages", messageRoutes);
 io.on("connection", (socket) => {
 	console.log("user connected:", socket.id);
 
-	socket.on("register", (userId: string) => {
-		console.log(`User registered: ${userId}`);
+	socket.on("user_online", (userId: string) => {
+		if (!userId) return;
+
+		socket.join(`user-${userId}`); // personal room;
 		socket.data.userId = userId;
+
+		console.log(`User ${userId} joined room user-${userId}`);
+	});
+
+	socket.on("user_offline", (userId: string) => {
+		if (!userId) return;
+
+		socket.leave(`user-${userId}`);
+		socket.data.userId = null;
+
+		console.log(`User ${userId} left room user-${userId}`);
 	});
 
 	handleDMs(io, socket);
 
 	socket.on("disconnect", () => {
-		console.log("socket disconnected:", socket.id);
+		console.log(`user disconnected: ${socket.data.userId || socket.id}`);
 	});
 });
 

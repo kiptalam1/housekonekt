@@ -123,7 +123,9 @@ const PropertyOwner = () => {
 								{landlord?.createdAt ? landlord.createdAt.split("T")[0] : "-"}
 							</p>
 							<p
-								onClick={() => navigate("/owner/messaging")}
+								onClick={() =>
+									navigate(`/owner/messaging?owner=${landlord?.id}`)
+								}
 								className="flex items-center justify-center gap-1 rounded-full bg-[var(--primary)] w-fit px-3 py-1 text-white font-bold cursor-pointer">
 								<MessageCircle size={18} absoluteStrokeWidth />
 								<span className="font-bold">Chat</span>
