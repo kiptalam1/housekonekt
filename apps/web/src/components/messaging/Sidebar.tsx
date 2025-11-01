@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import api from "../../api";
 import { AxiosError } from "axios";
 import { useAuth } from "../../hooks/useAuth";
+import { AVATAR_PLACEHOLDER_SVG } from "../../utils/common";
+import { useNavigate } from "react-router-dom";
 
 type Chat = {
 	id: string;
@@ -31,6 +33,7 @@ function Sidebar({
 	const [error, setError] = useState<string | null>(null);
 	const [loading, setLoading] = useState(false);
 	const { user } = useAuth();
+	const navigate = useNavigate();
 
 	useEffect(() => {
 		if (!user) return;
@@ -101,7 +104,18 @@ function Sidebar({
 						</div>
 					))}
 			</div>
-			<p>me</p>
+			<div
+				onClick={() => navigate("/user/me")}
+				className="cursor-pointer bg-[var(--bg-light)] py-2 px-4 flex  items-center gap-2 flex-wrap">
+				<div className="border-2 border-[var(--highlight)] rounded-full w-12 h-12">
+					<img
+						src={user?.avatarUrl || AVATAR_PLACEHOLDER_SVG}
+						alt={user?.username.charAt(0).toUpperCase()}
+						className="rounded-full object-cover w-full h-full"
+					/>
+				</div>
+				<p className="text-lg font-bold">{user?.username}</p>
+			</div>
 		</div>
 	);
 }
