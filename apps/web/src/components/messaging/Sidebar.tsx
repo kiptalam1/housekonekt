@@ -92,10 +92,17 @@ function Sidebar({
 							onClick={() => handleSelect(chat.id)}
 							className={`px-5 py-2 text-lg font-semibold shadow-xs cursor-pointer transition-all duration-150 ${
 								selected === chat.id
-									? "bg-[var(--bg-light)] text-[var(--text)]"
+									? "bg-[var(--bg-light)] text-[var(--text)] "
 									: "text-[var(--text-muted)] hover:text-[var(--text)] hover:bg-[var(--bg-light)]"
 							}`}>
-							<span>{chat.username}</span>
+							<span
+								className={
+									selected === chat.id
+										? "text-lg text-[var(--info)] font-bold"
+										: "text-base font-normal"
+								}>
+								{chat.username}
+							</span>
 							{unread[chat.id] && (
 								<span className="ml-2 text-red-500 font-bold animate-pulse">
 									&#x25CF;
@@ -106,7 +113,7 @@ function Sidebar({
 			</div>
 			<div
 				onClick={() => navigate("/user/me")}
-				className="cursor-pointer bg-[var(--bg-light)] py-2 px-4 flex  items-center gap-2 flex-wrap">
+				className="cursor-pointer bg-[var(--bg-light)] py-2 px-4 flex  items-center gap-2 flex-wrap hover:bg-[var(--bg)] transition-bg duration-150">
 				<div className="border-2 border-[var(--highlight)] rounded-full w-12 h-12">
 					<img
 						src={user?.avatarUrl || AVATAR_PLACEHOLDER_SVG}

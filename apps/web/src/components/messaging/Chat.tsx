@@ -4,6 +4,7 @@ import { socket } from "../../socket";
 import { useAuth } from "../../hooks/useAuth";
 import api from "../../api";
 import { AxiosError } from "axios";
+import { AVATAR_PLACEHOLDER_SVG } from "../../utils/common";
 
 type Message = {
 	id?: string;
@@ -23,9 +24,8 @@ function Chat({ selectedUser }: { selectedUser: string | null }) {
 	const [error, setError] = useState<string | null>(null);
 	const [selectedUserInfo, setSelectedUserInfo] = useState<{
 		username: string;
+		avatarUrl: string;
 	} | null>(null);
-
-	console.log("chats", chats);
 
 	function handleSend(e: FormEvent<HTMLFormElement>) {
 		e.preventDefault();
@@ -109,10 +109,19 @@ function Chat({ selectedUser }: { selectedUser: string | null }) {
 		fetchChatHistory();
 	}, [user, selectedUser]);
 
-	return (
+	return selectedUser ? (
 		<div className="flex flex-col flex-1 px-2">
 			<div className="w-full text-xl font-semibold py-2 px-5 h-12 border border-[var(--border-muted)] text-center">
-				{selectedUserInfo ? selectedUserInfo.username : "No chat selected"}
+				<div className="flex items-center gap-2 justify-center">
+					<img
+						src={selectedUserInfo?.avatarUrl || AVATAR_PLACEHOLDER_SVG}
+						alt={selectedUserInfo?.username || "Avatar"}
+						className="rounded-full w-8 h-8 object-cover"
+					/>
+					<p>
+						{selectedUserInfo ? selectedUserInfo.username : "No chat selected"}
+					</p>
+				</div>
 			</div>
 
 			{/* chats */}
@@ -131,15 +140,17 @@ function Chat({ selectedUser }: { selectedUser: string | null }) {
 							return (
 								<div
 									key={chat.id}
-									className={`py-1 px-4 max-w-2/3 overflow-auto rounded-2xl border ${
+									className={`py-1 px-4 max-w-2/3 overflow-y-auto rounded-2xl border ${
 										isSender
 											? "self-end bg-[var(--highlight)] border-none"
 											: "self-start border border-[var(--border-muted)]"
 									}`}>
 									{chat.content}
 									{isLast && (
-										<p className="text-right mt-1 text-xs text-[var(--primary)]">
-											{isSender ? "~You" : selectedUserInfo?.username}
+										<p className="text-right mt-1 text-xs text-[var(--primary)] italic">
+											{isSender
+												? "~You"
+												: `~${selectedUserInfo?.username.slice(0, 10)}`}
 										</p>
 									)}
 								</div>
@@ -174,6 +185,8 @@ function Chat({ selectedUser }: { selectedUser: string | null }) {
 				)}
 			</div>
 		</div>
+	) : (
+		<div className="flex flex-col flex-1 px-2"></div>
 	);
 }
 
