@@ -164,7 +164,7 @@ function Chat({
 							return (
 								<div
 									key={chat.id}
-									className={`py-1 px-4 max-w-2/3 overflow-y-auto scrollbar-none rounded-2xl border ${
+									className={`py-1 px-4 max-w-5/6 sm:max-w-2/3 overflow-y-auto scrollbar-none rounded-2xl border ${
 										isSender
 											? "self-end bg-[var(--highlight)] border-none"
 											: "self-start border border-[var(--border-muted)]"
