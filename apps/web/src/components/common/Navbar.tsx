@@ -91,6 +91,17 @@ function MobileMenu({
 				)}
 				{user && (
 					<NavLink
+						to={`/owner/messaging`}
+						className={({ isActive }) =>
+							isActive
+								? "text-[var(--primary)] font-bold text-lg"
+								: "text-base hover:bg-[var(--bg)] p-2 rounded-lg"
+						}>
+						Chats
+					</NavLink>
+				)}
+				{user && (
+					<NavLink
 						to={"/user/me"}
 						onClick={onClose}
 						className={({ isActive }) =>

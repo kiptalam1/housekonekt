@@ -67,7 +67,7 @@ function Sidebar({
 	};
 
 	return (
-		<div className="flex flex-col w-[250px] lg:w-[350px] overflow-y-auto scroll-smooth border border-[var(--border-muted)] border-b-0">
+		<div className="flex flex-col w-full  sm:w-[250px] lg:w-[350px] overflow-y-auto scroll-smooth border border-[var(--border-muted)] border-b-0">
 			<h2 className="border border-[var(--border-muted)] py-2 h-12 text-center text-2xl font-bold">
 				Chats
 			</h2>

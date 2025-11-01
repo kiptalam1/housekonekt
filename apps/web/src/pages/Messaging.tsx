@@ -8,9 +8,20 @@ import { socket } from "../socket";
 export default function Messaging() {
 	const [selectedUser, setSelectedUser] = useState<string | null>(null);
 	const [unread, setUnread] = useState<Record<string, boolean>>({});
+	const [isMobile, setIsMobile] = useState(window.innerWidth < 640);
+	const [showSidebar, setShowSidebar] = useState(true);
 	const { user } = useAuth();
 	const [params] = useSearchParams();
 	const ownerId = params.get("owner");
+
+	useEffect(() => {
+		const handleResize = () => setIsMobile(window.innerWidth < 640);
+		window.addEventListener("resize", handleResize);
+
+		return () => {
+			window.removeEventListener("resize", handleResize);
+		};
+	}, []);
 
 	useEffect(() => {
 		if (user) {
@@ -39,12 +50,23 @@ export default function Messaging() {
 
 	return (
 		<section className="min-h-screen  flex ">
-			<Sidebar
-				onSelectChat={setSelectedUser}
-				unread={unread}
-				setUnread={setUnread}
-			/>
-			<Chat selectedUser={selectedUser} />
+			{(!isMobile || showSidebar) && (
+				<Sidebar
+					onSelectChat={(id) => {
+						setSelectedUser(id);
+						if (isMobile) setShowSidebar(false);
+					}}
+					unread={unread}
+					setUnread={setUnread}
+				/>
+			)}
+			{(!isMobile || !showSidebar) && (
+				<Chat
+					selectedUser={selectedUser}
+					onBack={() => isMobile && setShowSidebar(true)}
+					isMobile={isMobile}
+				/>
+			)}
 		</section>
 	);
 }

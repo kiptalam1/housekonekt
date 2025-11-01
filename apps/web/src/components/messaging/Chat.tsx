@@ -1,5 +1,5 @@
-import { SendHorizontal } from "lucide-react";
-import { useEffect, useState, type FormEvent } from "react";
+import { ArrowLeft, SendHorizontal } from "lucide-react";
+import { useEffect, useState, type FormEvent, type KeyboardEvent } from "react";
 import { socket } from "../../socket";
 import { useAuth } from "../../hooks/useAuth";
 import api from "../../api";
@@ -17,7 +17,15 @@ type Message = {
 	receiverId: string;
 };
 
-function Chat({ selectedUser }: { selectedUser: string | null }) {
+function Chat({
+	selectedUser,
+	onBack,
+	isMobile,
+}: {
+	selectedUser: string | null;
+	onBack: () => void;
+	isMobile: boolean;
+}) {
 	const { user } = useAuth();
 	const [message, setMessage] = useState("");
 	const [chats, setChats] = useState<Message[]>([]);
@@ -27,8 +35,10 @@ function Chat({ selectedUser }: { selectedUser: string | null }) {
 		avatarUrl: string;
 	} | null>(null);
 
-	function handleSend(e: FormEvent<HTMLFormElement>) {
-		e.preventDefault();
+	function handleSend(
+		e?: FormEvent<HTMLFormElement> | KeyboardEvent<HTMLTextAreaElement>
+	) {
+		e?.preventDefault();
 
 		if (!message.trim() || !user || !selectedUser) return;
 
@@ -109,9 +119,23 @@ function Chat({ selectedUser }: { selectedUser: string | null }) {
 		fetchChatHistory();
 	}, [user, selectedUser]);
 
+	useEffect(() => {
+		const last = document.getElementById("chat-end");
+		if (last) last.scrollIntoView({ behavior: "smooth" });
+	}, [chats]);
+
 	return selectedUser ? (
-		<div className="flex flex-col flex-1 px-2">
-			<div className="w-full text-xl font-semibold py-2 px-5 h-12 border border-[var(--border-muted)] text-center">
+		<div className="flex flex-col flex-1 sm:px-2 w-full">
+			<div className="w-full text-xl font-semibold py-2 px-2 sm:px-5 h-12 border border-[var(--border-muted)] flex items-center gap-16">
+				{isMobile && (
+					<button
+						type="button"
+						onClick={onBack}
+						className="text-sm flex items-center gap-1 cursor-pointer">
+						<ArrowLeft size={18} absoluteStrokeWidth />
+						Back
+					</button>
+				)}
 				<div className="flex items-center gap-2 justify-center">
 					<img
 						src={selectedUserInfo?.avatarUrl || AVATAR_PLACEHOLDER_SVG}
@@ -125,8 +149,8 @@ function Chat({ selectedUser }: { selectedUser: string | null }) {
 			</div>
 
 			{/* chats */}
-			<div className="flex-1 flex flex-col overflow-y-auto p-2">
-				<div className="flex-1 flex flex-col gap-1 p-5">
+			<div className="flex-1 flex flex-col overflow-y-auto scrollbar-none p-1 sm:p-2 w-full">
+				<div className="flex-1 flex flex-col gap-1 py-4 sm:p-5">
 					{error && (
 						<p className="text-center text-sm text-[var(--text-muted)]">
 							{error}
@@ -140,7 +164,7 @@ function Chat({ selectedUser }: { selectedUser: string | null }) {
 							return (
 								<div
 									key={chat.id}
-									className={`py-1 px-4 max-w-2/3 overflow-y-auto rounded-2xl border ${
+									className={`py-1 px-4 max-w-2/3 overflow-y-auto scrollbar-none rounded-2xl border ${
 										isSender
 											? "self-end bg-[var(--highlight)] border-none"
 											: "self-start border border-[var(--border-muted)]"
@@ -156,6 +180,7 @@ function Chat({ selectedUser }: { selectedUser: string | null }) {
 								</div>
 							);
 						})}
+					<div id="chat-end" />
 				</div>
 
 				{selectedUser && (
@@ -172,6 +197,9 @@ function Chat({ selectedUser }: { selectedUser: string | null }) {
 									e.currentTarget.style.height = "auto";
 									e.currentTarget.style.height = `${e.currentTarget.scrollHeight}px`;
 								}}
+								onKeyDown={(e) =>
+									e.key === "Enter" && !e.shiftKey && handleSend(e)
+								}
 								className="flex-1 w-full resize-none rounded-2xl border border-[var(--border)] bg-[var(--bg-light)] px-4 py-1 text-lg placeholder:text-[var(--text-muted)] placeholder:text-sm placeholder:italic
 							focus:ring-2 focus:ring-[var(--info)] focus:outline-none scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-transparent"></textarea>
 							<button
@@ -186,7 +214,9 @@ function Chat({ selectedUser }: { selectedUser: string | null }) {
 			</div>
 		</div>
 	) : (
-		<div className="flex flex-col flex-1 px-2"></div>
+		<div className="flex flex-1 items-center justify-center text-[var(--text-muted)]">
+			Select a conversation to start chatting
+		</div>
 	);
 }
 
