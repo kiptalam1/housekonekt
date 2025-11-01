@@ -25,6 +25,8 @@ function Chat({ selectedUser }: { selectedUser: string | null }) {
 		username: string;
 	} | null>(null);
 
+	console.log("chats", chats);
+
 	function handleSend(e: FormEvent<HTMLFormElement>) {
 		e.preventDefault();
 
@@ -47,14 +49,30 @@ function Chat({ selectedUser }: { selectedUser: string | null }) {
 	}
 
 	useEffect(() => {
-		socket.on("receive_dm", (msg) => {
-			setChats((prev) => [...prev, msg]);
-		});
+		if (!user) return;
+
+		const handleReceive = (msg: Message) => {
+			// ignore messages i sent;
+			if (msg.senderId === user.id) return;
+			// check if messages belong to current open convo;
+			const belongs =
+				(msg.senderId === selectedUser && msg.receiverId === user.id) ||
+				(msg.senderId === user.id && msg.receiverId === selectedUser);
+
+			if (!belongs) {
+				return;
+			}
+			setChats((prev) => {
+				if (msg.id && prev.some((m) => m.id === msg.id)) return prev;
+				return [...prev, msg];
+			});
+		};
+		socket.on("receive_dm", handleReceive);
 
 		return () => {
-			socket.off("receive_dm");
+			socket.off("receive_dm", handleReceive);
 		};
-	}, []);
+	}, [user, selectedUser]);
 
 	useEffect(() => {
 		if (!selectedUser) return;
@@ -107,30 +125,26 @@ function Chat({ selectedUser }: { selectedUser: string | null }) {
 					)}
 					{chats &&
 						chats.length > 0 &&
-						chats.map((chat, index) => (
-							<div
-								key={chat.id}
-								className={`py-1 px-4 max-w-2/3 overflow-auto rounded-2xl border ${
-									chat.receiverId === selectedUser
-										? "self-end bg-[var(--highlight)] border-none"
-										: "self-start border border-[var(--border-muted)]"
-								}`}>
-								{chat.content}
-								{chat.senderId !== selectedUser &&
-								chats.length - 1 === index ? (
-									<p className="text-right mt-1 text-xs text-[var(--primary)]">
-										~You
-									</p>
-								) : (
-									chat.receiverId === selectedUser &&
-									chats.length - 1 === chats.indexOf(chat) && (
+						chats.map((chat, index) => {
+							const isSender = chat.senderId === user?.id;
+							const isLast = chats.length - 1 === index;
+							return (
+								<div
+									key={chat.id}
+									className={`py-1 px-4 max-w-2/3 overflow-auto rounded-2xl border ${
+										isSender
+											? "self-end bg-[var(--highlight)] border-none"
+											: "self-start border border-[var(--border-muted)]"
+									}`}>
+									{chat.content}
+									{isLast && (
 										<p className="text-right mt-1 text-xs text-[var(--primary)]">
-											{selectedUserInfo?.username}
+											{isSender ? "~You" : selectedUserInfo?.username}
 										</p>
-									)
-								)}
-							</div>
-						))}
+									)}
+								</div>
+							);
+						})}
 				</div>
 
 				{selectedUser && (

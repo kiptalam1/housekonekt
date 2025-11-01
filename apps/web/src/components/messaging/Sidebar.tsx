@@ -17,7 +17,15 @@ type Chat = {
 	phone: string | null;
 };
 
-function Sidebar({ onSelectChat }: { onSelectChat: (userId: string) => void }) {
+function Sidebar({
+	onSelectChat,
+	unread,
+	setUnread,
+}: {
+	unread: Record<string, boolean>;
+	setUnread: React.Dispatch<React.SetStateAction<Record<string, boolean>>>;
+	onSelectChat: (userId: string) => void;
+}) {
 	const [selected, setSelected] = useState<string | null>(null);
 	const [chatsList, setChatsList] = useState<Chat[] | null>(null);
 	const [error, setError] = useState<string | null>(null);
@@ -49,6 +57,10 @@ function Sidebar({ onSelectChat }: { onSelectChat: (userId: string) => void }) {
 	const handleSelect = (id: string) => {
 		setSelected(id);
 		onSelectChat(id);
+
+		if (unread[id]) {
+			setUnread((prev) => ({ ...prev, [id]: false }));
+		}
 	};
 
 	return (
@@ -80,7 +92,12 @@ function Sidebar({ onSelectChat }: { onSelectChat: (userId: string) => void }) {
 									? "bg-[var(--bg-light)] text-[var(--text)]"
 									: "text-[var(--text-muted)] hover:text-[var(--text)] hover:bg-[var(--bg-light)]"
 							}`}>
-							{chat.username}
+							<span>{chat.username}</span>
+							{unread[chat.id] && (
+								<span className="ml-2 text-red-500 font-bold animate-pulse">
+									&#x25CF;
+								</span>
+							)}
 						</div>
 					))}
 			</div>

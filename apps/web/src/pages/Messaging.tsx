@@ -7,6 +7,7 @@ import { socket } from "../socket";
 
 export default function Messaging() {
 	const [selectedUser, setSelectedUser] = useState<string | null>(null);
+	const [unread, setUnread] = useState<Record<string, boolean>>({});
 	const { user } = useAuth();
 	const [params] = useSearchParams();
 	const ownerId = params.get("owner");
@@ -22,9 +23,27 @@ export default function Messaging() {
 			};
 		}
 	}, [ownerId, user]);
+
+	useEffect(() => {
+		const handleNotification = (data: { from: string }) => {
+			if (selectedUser !== data.from) {
+				setUnread((prev) => ({ ...prev, [data.from]: true }));
+			}
+		};
+		socket.on("new_message_notification", handleNotification);
+
+		return () => {
+			socket.off("new_message_notification", handleNotification);
+		};
+	}, [selectedUser]);
+
 	return (
 		<section className="min-h-screen  flex ">
-			<Sidebar onSelectChat={setSelectedUser} />
+			<Sidebar
+				onSelectChat={setSelectedUser}
+				unread={unread}
+				setUnread={setUnread}
+			/>
 			<Chat selectedUser={selectedUser} />
 		</section>
 	);

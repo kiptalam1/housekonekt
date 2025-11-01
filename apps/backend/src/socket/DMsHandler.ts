@@ -14,12 +14,6 @@ type SendDMData = {
 };
 
 export function handleDMs(io: Server, socket: Socket): void {
-	// join room for two users (owner + user);
-	// socket.on("join_dm", ({ userId, ownerId }: JoinDMData) => {
-	// 	const roomId = `dm-${[userId, ownerId].sort().join("-")}`;
-	// 	socket.join(roomId);
-	// });
-
 	// send message;
 	socket.on(
 		"send_dm",
@@ -39,6 +33,11 @@ export function handleDMs(io: Server, socket: Socket): void {
 				//emit to both sender and receiver personal rooms;
 				io.to(`user-${receiverId}`).emit("receive_dm", message);
 				io.to(`user-${senderId}`).emit("receive_dm", message);
+
+				io.to(`user-${receiverId}`).emit("new_message_notification", {
+					from: message.senderId,
+					preview: message.content,
+				});
 			} catch (error) {
 				console.error("DM error:", error);
 				socket.emit("dm_error", { message: "Failed to send message" });
