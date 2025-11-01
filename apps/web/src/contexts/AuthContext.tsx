@@ -105,7 +105,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 				setUser(res.user);
 			}
 			return true;
-		} catch {
+		} catch (error) {
+			if (import.meta.env.DEV) console.warn("silent token refresh failed", error)
 			return false;
 		}
 	};

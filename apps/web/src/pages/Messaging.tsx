@@ -49,7 +49,7 @@ export default function Messaging() {
 	}, [selectedUser]);
 
 	return (
-		<section className="min-h-screen  flex ">
+		<section className="min-h-screen flex ">
 			{(!isMobile || showSidebar) && (
 				<Sidebar
 					onSelectChat={(id) => {
