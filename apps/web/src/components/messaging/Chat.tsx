@@ -131,7 +131,7 @@ function Chat({
 
 	return selectedUser ? (
 		<div className="flex flex-col flex-1 sm:px-2 w-full">
-			<div className="w-full text-xl font-semibold py-2 px-2 sm:px-5 h-12 border border-[var(--border-muted)] flex items-center gap-16">
+			<div className="sticky top-0 z-20 w-full text-xl font-semibold py-2 px-2 sm:px-5 h-12 rounded-lg border border-[var(--border-muted)] bg-[var(--bg-light)] flex items-center gap-16">
 				{isMobile && (
 					<button
 						type="button"
@@ -154,8 +154,8 @@ function Chat({
 			</div>
 
 			{/* chats */}
-			<div className="flex-1 flex flex-col overflow-y-auto scrollbar-none sm:p-2 w-full pb-4">
-				<div className="flex-1 flex flex-col gap-1 py-4 sm:p-5">
+			<div className="flex-1 flex flex-col overflow-y-auto hide-scrollbar sm:p-2 w-full pb-4">
+				<div className="flex-1 flex flex-col gap-1 py-4 sm:p-5 overflow-y-auto hide-scrollbar">
 					{error && (
 						<p className="text-center text-sm text-[var(--text-muted)]">
 							{error}
@@ -192,7 +192,7 @@ function Chat({
 				</div>
 
 				{selectedUser && (
-					<div className="sticky bottom-0 left-0 w-full bg-[var(--bg)] px-1">
+					<div className="sticky z-20 bottom-0 left-0 w-full bg-[var(--bg)] px-1">
 						<form
 							onSubmit={handleSend}
 							className="flex items-center gap-2 w-full max-w-3xl mx-auto">
