@@ -120,8 +120,13 @@ function Chat({
 	}, [user, selectedUser]);
 
 	useEffect(() => {
-		const last = document.getElementById("chat-end");
-		if (last) last.scrollIntoView({ behavior: "smooth" });
+		const timeout = setTimeout(() => {
+			document
+				.getElementById("chat-end")
+				?.scrollIntoView({ behavior: "smooth" });
+		}, 50);
+
+		return () => clearTimeout(timeout);
 	}, [chats]);
 
 	return selectedUser ? (
@@ -149,7 +154,7 @@ function Chat({
 			</div>
 
 			{/* chats */}
-			<div className="flex-1 flex flex-col overflow-y-auto scrollbar-none p-1 sm:p-2 w-full">
+			<div className="flex-1 flex flex-col overflow-y-auto scrollbar-none sm:p-2 w-full pb-4">
 				<div className="flex-1 flex flex-col gap-1 py-4 sm:p-5">
 					{error && (
 						<p className="text-center text-sm text-[var(--text-muted)]">
@@ -184,8 +189,10 @@ function Chat({
 				</div>
 
 				{selectedUser && (
-					<form onSubmit={handleSend}>
-						<div className="flex items-center gap-2">
+					<div className="sticky bottom-0 left-0 w-full bg-[var(--bg)] px-1">
+						<form
+							onSubmit={handleSend}
+							className="flex items-center gap-2 w-full max-w-3xl mx-auto">
 							<textarea
 								name="input-message"
 								id="input-message"
@@ -197,19 +204,23 @@ function Chat({
 									e.currentTarget.style.height = "auto";
 									e.currentTarget.style.height = `${e.currentTarget.scrollHeight}px`;
 								}}
-								onKeyDown={(e) =>
-									e.key === "Enter" && !e.shiftKey && handleSend(e)
-								}
+								onKeyDown={(e) => {
+									if (e.key === "Enter" && !e.shiftKey) {
+										e.preventDefault();
+										handleSend();
+									}
+								}}
 								className="flex-1 w-full resize-none rounded-2xl border border-[var(--border)] bg-[var(--bg-light)] px-4 py-1 text-lg placeholder:text-[var(--text-muted)] placeholder:text-sm placeholder:italic
-							focus:ring-2 focus:ring-[var(--info)] focus:outline-none scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-transparent"></textarea>
+							focus:ring-2 focus:ring-[var(--info)] focus:outline-none scrollbar-thin hide-scrollbar max-h-[150px]"></textarea>
 							<button
 								type="submit"
+								disabled={!message.trim()}
 								aria-label="send message"
-								className="text-[var(--primary)] cursor-pointer">
-								<SendHorizontal size={28} absoluteStrokeWidth />
+								className="text-[var(--primary)] cursor-pointer shrink-0 hover:text-[var(--highlight)] transition-all duration-150">
+								<SendHorizontal size={isMobile ? 22 : 28} absoluteStrokeWidth />
 							</button>
-						</div>
-					</form>
+						</form>
+					</div>
 				)}
 			</div>
 		</div>
