@@ -4,7 +4,7 @@ import { socket } from "../../socket";
 import { useAuth } from "../../hooks/useAuth";
 import api from "../../api";
 import { AxiosError } from "axios";
-import { AVATAR_PLACEHOLDER_SVG } from "../../utils/common";
+import { AVATAR_PLACEHOLDER_SVG, formatDateTime } from "../../utils/common";
 
 type Message = {
 	id?: string;
@@ -169,12 +169,15 @@ function Chat({
 							return (
 								<div
 									key={chat.id}
-									className={`py-1 px-4 max-w-5/6 sm:max-w-2/3 overflow-y-auto scrollbar-none rounded-2xl border ${
+									className={`py-1 px-4 max-w-5/6 sm:max-w-2/3 overflow-y-auto hide-scrollbar rounded-2xl border text-lg ${
 										isSender
-											? "self-end bg-[var(--highlight)] border-none"
+											? "self-end bg-[var(--highlight)] border-none text-right"
 											: "self-start border border-[var(--border-muted)]"
 									}`}>
 									{chat.content}
+									<p className="text-[10px] text-[var(--text-muted)]">
+										{formatDateTime(chat.createdAt)}
+									</p>
 									{isLast && (
 										<p className="text-right mt-1 text-xs text-[var(--primary)] italic">
 											{isSender
