@@ -14,7 +14,7 @@ export type UserType = {
 	id: string;
 	username: string;
 	email: string;
-	role: string;
+	role: "ADMIN" | "USER" | "OWNER";
 	avatarUrl?: string;
 	bio?: string;
 	isVerified: boolean;

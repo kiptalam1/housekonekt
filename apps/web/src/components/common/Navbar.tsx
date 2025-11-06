@@ -112,6 +112,20 @@ function MobileMenu({
 						My Profile
 					</NavLink>
 				)}
+
+				{user && user.role === "ADMIN" && (
+					<NavLink
+						to={"/admin"}
+						onClick={onClose}
+						className={({ isActive }) =>
+							isActive
+								? "text-[var(--primary)] font-bold text-lg"
+								: "text-base hover:bg-[var(--bg)] p-2 rounded-lg"
+						}>
+						Admin
+					</NavLink>
+				)}
+
 				{user && (
 					<button
 						type="button"
@@ -263,6 +277,21 @@ const Navbar = () => {
 						My Profile
 					</NavLink>
 				)}
+
+				{user && user.role === "ADMIN" && (
+					<NavLink
+						to={"/admin"}
+						className={({ isActive }) =>
+							`hidden sm:block transition-all duration-200 ${
+								isActive
+									? "text-[var(--primary)] font-bold text-xl underline underline-offset-2"
+									: "text-base hover:text-[var(--primary)]"
+							}`
+						}>
+						Admin
+					</NavLink>
+				)}
+
 				{user && (
 					<button
 						type="button"

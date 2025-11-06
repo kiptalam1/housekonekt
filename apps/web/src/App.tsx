@@ -1,5 +1,6 @@
 import { Routes, Route } from "react-router-dom";
 import { Toaster } from "sonner";
+import Admin from "./pages/Admin";
 import Navbar from "./components/common/Navbar";
 import Home from "./pages/Home";
 import PropertyDetails from "./pages/PropertyDetails";
@@ -25,6 +26,8 @@ function App() {
 				<Route path="/auth/register" element={<RegisterPage />} />
 				<Route path="/dashboard/:id" element={<Dashboard />} />
 				<Route path="/user/me" element={<MyProfile />} />
+				<Route path="/admin" element={<Admin />} />
+
 				<Route path="/owner/messaging" element={<Messaging />} />
 			</Routes>
 			<Toaster richColors position="top-center" />
