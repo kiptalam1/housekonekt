@@ -1,3 +1,4 @@
 {
-  "cSpell.words": ["housekonekt", "ILIKE", "plainto", "tsquery"]
+	"cSpell.words": ["housekonekt", "ILIKE", "plainto", "tsquery"],
+	"postman.settings.dotenv-detection-notification-visibility": false
 }

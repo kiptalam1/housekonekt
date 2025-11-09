@@ -199,12 +199,16 @@ export const getAllProperty = async (
 			skip,
 			take: limitNum,
 			where: filters,
+			include: {
+				owner: {
+					select: {
+						username: true,
+						id: true,
+					},
+				},
+			},
 			omit: {
-				ownerId: true,
 				updatedAt: true,
-				views: true,
-				description: true,
-				units: true,
 			},
 			orderBy: [
 				{

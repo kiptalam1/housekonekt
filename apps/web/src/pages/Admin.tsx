@@ -1,5 +1,6 @@
 import { useState,  } from "react";
 import { useAuth } from "../hooks/useAuth";
+import AdminProperty from "../components/admin/AdminProperty";
 
 const Admin = () => {
 	const { user } = useAuth();
@@ -29,6 +30,7 @@ const Admin = () => {
 					</div>
 				))}
 			</div>
+			<AdminProperty />
 		</div>
 	);
 };
