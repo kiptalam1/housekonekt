@@ -72,6 +72,7 @@ const AdminProperties = () => {
 						properties.length > 0 &&
 						properties.map((p) => (
 							<tr
+								key={p.id}
 								className={`border-b border-[var(--border-muted)] text-s ${
 									p.deletedAt != null
 										? "line-through text-[var(--border)] text-sm"
