@@ -1,56 +1,11 @@
-import { AxiosError } from "axios";
 import { Loader2 } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
-import { toast } from "sonner";
-import api from "../../api";
+import {  useMemo } from "react";
 import { AVATAR_PLACEHOLDER_SVG, formatDateTime } from "../../utils/common";
-
-type Owner = {
-	id: string;
-	username: string;
-	email: string;
-	role: "ADMIN" | "USER" | "OWNER";
-	isVerified: boolean;
-	phone: string | null;
-	bio: string | null;
-	lastLogin: string | null;
-	createdAt: string;
-	avatarUrl: string | null;
-	_count: {
-		sentMessages: number;
-		receivedMessages: number;
-		properties: number;
-	};
-};
+import { useOutletContext } from "react-router-dom";
+import type { AdminOutletContext } from "../../pages/Admin";
 
 const AdminOwners = () => {
-	const [users, setUsers] = useState<Owner[] | null>(null);
-	const [isLoading, setIsLoading] = useState(false);
-
-	useEffect(() => {
-		const fetchAllUsers = async () => {
-			setIsLoading(true);
-			try {
-				const res = (await api.get("/users/all-users")).data;
-				if (!res) throw new Error(res.error || "Failed to load users");
-
-				setUsers(res.data);
-			} catch (error) {
-				console.error("Error fetching users", error);
-				toast.error(
-					error instanceof AxiosError
-						? error.response?.data.error
-						: error instanceof Error
-						? error.message
-						: "Something went wrong."
-				);
-			} finally {
-				setIsLoading(false);
-			}
-		};
-
-		fetchAllUsers();
-	}, []);
+	const { users, loadingUsers } = useOutletContext<AdminOutletContext>();
 
 	const owners = useMemo(
 		() => users?.filter((u) => u.role === "OWNER") ?? [],
@@ -59,7 +14,7 @@ const AdminOwners = () => {
 
 	return (
 		<section className="w-full mx-auto">
-			{isLoading && (
+			{loadingUsers && (
 				<div className="flex justify-center text-[var(--primary)] animate-spin mt-5">
 					<Loader2 size={20} />
 				</div>
@@ -107,7 +62,7 @@ const AdminOwners = () => {
 						</tr>
 					</thead>
 					<tbody className="overflow-x-auto">
-						{!isLoading && users?.length === 0 && (
+						{!loadingUsers && users?.length === 0 && (
 							<tr>
 								<td
 									colSpan={11}
@@ -116,7 +71,7 @@ const AdminOwners = () => {
 								</td>
 							</tr>
 						)}
-						{!isLoading &&
+						{!loadingUsers &&
 							users &&
 							users.length > 0 &&
 							owners.map((o) => (

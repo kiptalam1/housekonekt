@@ -1,42 +1,14 @@
-import { useEffect, useState } from "react";
-import api from "../../api";
 import { Loader2 } from "lucide-react";
-import type { Property } from "../../utils/common";
-import { toast } from "sonner";
-import { AxiosError } from "axios";
+import { useOutletContext } from "react-router-dom";
+import type { AdminOutletContext } from "../../pages/Admin";
 
 const AdminProperties = () => {
-	const [properties, setProperties] = useState<Property[] | null>(null);
-	const [isLoading, setIsLoading] = useState(false);
-
-	useEffect(() => {
-		const fetchAllProperties = async () => {
-			setIsLoading(true);
-			try {
-				const res = (await api.get("/properties")).data;
-				if (!res) throw new Error(res.error || "Failed to load properties");
-
-				setProperties(res.data);
-			} catch (error) {
-				console.error("Error fetching properties", error);
-				toast.error(
-					error instanceof AxiosError
-						? error.response?.data.error
-						: error instanceof Error
-						? error.message
-						: "Something went wrong."
-				);
-			} finally {
-				setIsLoading(false);
-			}
-		};
-
-		fetchAllProperties();
-	}, []);
+	const { loadingProperties, properties } =
+		useOutletContext<AdminOutletContext>();
 
 	return (
 		<section className="w-full overflow-x-auto">
-			{isLoading && (
+			{loadingProperties && (
 				<div className="flex justify-center text-[var(--primary)] animate-spin mt-5">
 					<Loader2 size={20} />
 				</div>
@@ -58,7 +30,7 @@ const AdminProperties = () => {
 					</tr>
 				</thead>
 				<tbody>
-					{!isLoading && properties?.length === 0 && (
+					{!loadingProperties && properties?.length === 0 && (
 						<tr>
 							<td
 								colSpan={11}
@@ -67,7 +39,7 @@ const AdminProperties = () => {
 							</td>
 						</tr>
 					)}
-					{!isLoading &&
+					{!loadingProperties &&
 						properties &&
 						properties.length > 0 &&
 						properties.map((p) => (
