@@ -1,10 +1,11 @@
-import { useState,  } from "react";
+import { useEffect, useState } from "react";
 import { useAuth } from "../hooks/useAuth";
-import { Outlet, useNavigate } from "react-router-dom";
+import { Outlet, useLocation, useNavigate } from "react-router-dom";
 
 const Admin = () => {
 	const { user } = useAuth();
 	const navigate = useNavigate();
+	const location = useLocation();
 
 	const options = [
 		{ label: "Properties", path: "/admin" },
@@ -13,18 +14,24 @@ const Admin = () => {
 	];
 	const [selectedIndex, setSelectedIndex] = useState(0);
 
+	// sync the selectedIndex with the current url;
+	useEffect(() => {
+		const current = options.findIndex((opt) => location.pathname === opt.path);
+		setSelectedIndex(current !== -1 ? current : 0);
+	}, [location.pathname]);
+
 	function handleClick(index: number) {
 		setSelectedIndex(index);
 		navigate(options[index].path);
 	}
 
 	return (
-		<div className="min-h-screen flex flex-col py-4 sm:py-6 gap-5">
+		<div className="min-h-screen flex flex-col py-4 sm:py-6 gap-5 overflow-x-auto">
 			<h1 className="text-center text-2xl md:text-3xl font-bold text-[var(--primary)]">
 				Welcome {user ? user.username : "admin"}
 			</h1>
 			{/* toggle */}
-			<div className="flex mx-auto items-center justify-center gap-2 bg-[var(--bg-light)] rounded-lg">
+			<div className="flex mx-auto items-center justify-center gap-2 bg-[var(--bg-light)] rounded-lg ">
 				{options.map((option, index) => (
 					<div
 						key={index}

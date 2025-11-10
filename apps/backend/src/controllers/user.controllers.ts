@@ -122,6 +122,7 @@ export const getAllUsers = async (
 					select: {
 						sentMessages: true,
 						receivedMessages: true,
+						properties: true,
 					},
 				},
 			},
