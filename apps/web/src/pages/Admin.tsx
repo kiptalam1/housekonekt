@@ -1,15 +1,21 @@
 import { useState,  } from "react";
 import { useAuth } from "../hooks/useAuth";
-import AdminProperty from "../components/admin/AdminProperty";
+import { Outlet, useNavigate } from "react-router-dom";
 
 const Admin = () => {
 	const { user } = useAuth();
+	const navigate = useNavigate();
 
-	const options = ["Properties", "All users", "Owners"];
-	const [selectedIndex, setSelectedIndex] = useState<number | null>(0);
+	const options = [
+		{ label: "Properties", path: "/admin" },
+		{ label: "All users", path: "/admin/all-users" },
+		{ label: "Owners", path: "/admin/owners" },
+	];
+	const [selectedIndex, setSelectedIndex] = useState(0);
 
 	function handleClick(index: number) {
 		setSelectedIndex(index);
+		navigate(options[index].path);
 	}
 
 	return (
@@ -20,17 +26,19 @@ const Admin = () => {
 			{/* toggle */}
 			<div className="flex mx-auto items-center justify-center gap-2 bg-[var(--bg-light)] rounded-lg">
 				{options.map((option, index) => (
-          <div            
+					<div
 						key={index}
 						onClick={() => handleClick(index)}
 						className={`py-2 px-4 cursor-pointer ${
-							selectedIndex === index ? "rounded-lg border border-[var(--primary)]" : ""
+							selectedIndex === index
+								? "rounded-lg border border-[var(--primary)]"
+								: ""
 						}`}>
-						{option}
+						{option.label}
 					</div>
 				))}
 			</div>
-			<AdminProperty />
+			<Outlet />
 		</div>
 	);
 };

@@ -11,6 +11,9 @@ import Dashboard from "./pages/Dashboard";
 import MyProfile from "./pages/MyProfile";
 import Messaging from "./pages/Messaging";
 import useSocketConnection from "./hooks/useSocketConnection";
+import AdminProperties from "./components/admin/AdminProperty";
+import AdminUsers from "./components/admin/AdminUsers";
+import AdminOwners from "./components/admin/AdminOwners";
 function App() {
 	useSocketConnection();
 	return (
@@ -26,7 +29,11 @@ function App() {
 				<Route path="/auth/register" element={<RegisterPage />} />
 				<Route path="/dashboard/:id" element={<Dashboard />} />
 				<Route path="/user/me" element={<MyProfile />} />
-				<Route path="/admin" element={<Admin />} />
+				<Route path="/admin" element={<Admin />}>
+					<Route index element={<AdminProperties />} />
+					<Route path="all-users" element={<AdminUsers />} />
+					<Route path="owners" element={<AdminOwners />} />
+				</Route>
 
 				<Route path="/owner/messaging" element={<Messaging />} />
 			</Routes>

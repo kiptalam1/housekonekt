@@ -58,12 +58,24 @@ const AdminProperties = () => {
 					</tr>
 				</thead>
 				<tbody>
+					{!isLoading && properties?.length === 0 && (
+						<tr>
+							<td
+								colSpan={11}
+								className="text-[var(--text-muted)] text-lg italic">
+								No properties yet...
+							</td>
+						</tr>
+					)}
 					{!isLoading &&
 						properties &&
+						properties.length > 0 &&
 						properties.map((p) => (
 							<tr
 								className={`border-b border-[var(--border-muted)] text-s ${
-									p.deletedAt != null ? "line-through text-[var(--border)] text-sm" : ""
+									p.deletedAt != null
+										? "line-through text-[var(--border)] text-sm"
+										: ""
 								}`}>
 								<td className="p-1">{p.title}</td>
 								<td className="p-1">{p.location}</td>
