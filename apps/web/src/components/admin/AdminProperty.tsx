@@ -44,17 +44,17 @@ const AdminProperties = () => {
 			<table className="rounded-lg overflow-x-auto">
 				<thead className="bg-[var(--bg-light)] border-b border-[var(--primary)]">
 					<tr>
-						<th className="p-1 text-left font-semibold">Title</th>
-						<th className="p-1 text-left font-semibold">Location</th>
-						<th className="p-1 text-left font-semibold">Price</th>
-						<th className="p-1 text-left font-semibold">Units</th>
-						<th className="p-1 text-left font-semibold">Status</th>
-						<th className="p-1 text-left font-semibold">Type</th>
-						<th className="p-1 text-left font-semibold">Amenities</th>
-						<th className="p-1 text-left font-semibold">Description</th>
-						<th className="p-1 text-left font-semibold">Views</th>
-						<th className="p-1 text-left font-semibold">Owner</th>
-						<th className="p-1 text-left font-semibold">CreatedAt</th>
+						<th className="p-1 text-left font-bold">Name</th>
+						<th className="p-1 text-left font-bold">Type</th>
+						<th className="p-1 text-left font-bold">Location</th>
+						<th className="p-1 text-left font-bold">Units</th>
+						<th className="p-1 text-left font-bold">Status</th>
+						<th className="p-1 text-left font-bold">Price</th>
+						<th className="p-1 text-left font-bold">Amenities</th>
+						<th className="p-1 text-left font-bold">Description</th>
+						<th className="p-1 text-left font-bold">Views</th>
+						<th className="p-1 text-left font-bold">Owner</th>
+						<th className="p-1 text-left font-bold">Created</th>
 					</tr>
 				</thead>
 				<tbody>
@@ -79,11 +79,11 @@ const AdminProperties = () => {
 										: ""
 								}`}>
 								<td className="p-1">{p.title}</td>
+								<td className="p-1">{p.type.toLocaleLowerCase()}</td>
 								<td className="p-1">{p.location}</td>
-								<td className="p-1">{p.price}</td>
-								<td className="p-1">{p.units}</td>
+								<td className="p-1 text-center">{p.units}</td>
 								<td
-									className={`p-1
+									className={`p-1 text-xs
                     ${
 											p.status === "AVAILABLE" && p.deletedAt == null
 												? "text-green-700"
@@ -93,10 +93,13 @@ const AdminProperties = () => {
 										} `}>
 									{p.status}
 								</td>
-								<td className="p-1">{p.type.toLocaleLowerCase()}</td>
-								<td className="p-1">{p.amenities}</td>
-								<td className="p-1">{p.description}</td>
-								<td className="p-1">{p.views}</td>
+								<td className="p-1">{p.price}</td>
+
+								<td className="p-1 text-xs lg:text-sm">
+									{p.amenities.join(", ")}
+								</td>
+								<td className="p-1 text-xs lg:text-sm">{p.description}</td>
+								<td className="p-1 text-center">{p.views}</td>
 								<td className="p-1">{p.owner?.username}</td>
 								<td className="p-1  text-xs">{p.createdAt.split("T")[0]}</td>
 							</tr>

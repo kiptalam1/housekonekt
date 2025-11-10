@@ -212,6 +212,9 @@ export const getAllProperty = async (
 			},
 			orderBy: [
 				{
+					deletedAt: { sort: "asc", nulls: "first" },
+				},
+				{
 					status: "asc",
 				},
 				{
