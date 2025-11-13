@@ -1,12 +1,11 @@
-import { Loader2 } from "lucide-react";
+import { Edit, Loader2, Trash2 } from "lucide-react";
 
 import { AVATAR_PLACEHOLDER_SVG, formatDateTime } from "../../utils/common";
 import { useOutletContext } from "react-router-dom";
 import type { AdminOutletContext } from "../../pages/Admin";
 
 const AdminUsers = () => {
-	const { users, loadingUsers,  } =
-		useOutletContext<AdminOutletContext>();
+	const { users, loadingUsers } = useOutletContext<AdminOutletContext>();
 
 	return (
 		<section className="w-full mx-auto">
@@ -19,39 +18,38 @@ const AdminUsers = () => {
 				<table className="w-full table-auto border-collapse">
 					<thead className="bg-[var(--bg-light)] border-b border-[var(--primary)] overflow-x-auto">
 						<tr>
-							<th className="p-1 text-left font-semibold whitespace-nowrap">
+							<th className="p-1 text-left font-bold whitespace-nowrap">
 								Avatar
 							</th>
-							<th className="p-1 text-left font-semibold whitespace-nowrap">
+							<th className="p-1 text-left font-bold whitespace-nowrap">
 								Name
 							</th>
-							<th className="p-1 text-left font-semibold whitespace-nowrap">
+							<th className="p-1 text-left font-bold whitespace-nowrap">
 								Email
 							</th>
-							<th className="p-1 text-left font-semibold whitespace-nowrap">
+							<th className="p-1 text-left font-bold whitespace-nowrap">
 								Role
 							</th>
-							<th className="p-1 text-left font-semibold whitespace-nowrap">
+							<th className="p-1 text-left font-bold whitespace-nowrap">
 								Verified
 							</th>
-							<th className="p-1 text-left font-semibold whitespace-nowrap">
+							<th className="p-1 text-left font-bold whitespace-nowrap">
 								Phone
 							</th>
-							<th className="p-1 text-left font-semibold whitespace-nowrap">
-								Bio
-							</th>
-							<th className="p-1 text-left font-semibold whitespace-nowrap">
+							<th className="p-1 text-left font-bold whitespace-nowrap">Bio</th>
+							<th className="p-1 text-left font-bold whitespace-nowrap">
 								Last Login
 							</th>
-							<th className="p-1 text-left font-semibold whitespace-nowrap">
+							<th className="p-1 text-left font-bold whitespace-nowrap">
 								Sent Messages
 							</th>
-							<th className="p-1 text-left font-semibold whitespace-nowrap">
+							<th className="p-1 text-left font-bold whitespace-nowrap">
 								Received Messages
 							</th>
-							<th className="p-1 text-left font-semibold whitespace-nowrap">
+							<th className="p-1 text-left font-bold whitespace-nowrap">
 								Joined
 							</th>
+							<th className="p-1 text-left font-bold">Actions</th>
 						</tr>
 					</thead>
 					<tbody className="overflow-x-auto">
@@ -104,6 +102,22 @@ const AdminUsers = () => {
 									</td>
 									<td className="p-1 whitespace-nowrap text-xs">
 										{u.createdAt.split("T")[0]}
+									</td>
+
+									<td className="p-1 text-xs text-center gap-4 space-x-4">
+										<button
+											type="button"
+											aria-label="update"
+											className="cursor-pointer text-blue-500 hover:text-blue-800 disabled:text-blue-950 disabled:cursor-not-allowed">
+											<Edit size={24} />
+										</button>
+
+										<button
+											type="button"
+											aria-label="delete"
+											className="cursor-pointer text-red-500 hover:text-red-800 disabled:text-red-950 disabled:cursor-not-allowed">
+											<Trash2 size={24} />
+										</button>
 									</td>
 								</tr>
 							))}
