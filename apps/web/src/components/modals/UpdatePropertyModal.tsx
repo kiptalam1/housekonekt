@@ -264,7 +264,7 @@ const UpdatePropertyModal = ({
 							<option value={"TWO_BEDROOM"}>TWO BEDROOM</option>
 							<option value={"THREE_BEDROOM"}>THREE BEDROOM</option>
 							<option value={"MAISONETTE"}>MAISONETTE</option>
-							<option value={"TOWN_HOUSE"}>TOWN HOUSE</option>
+							<option value={"TOWNHOUSE"}>TOWN HOUSE</option>
 							<option value={"BUNGALOW"}>BUNGALOW</option>
 							<option value={"SERVICED_APARTMENT"}>SERVICED APARTMENT</option>
 							<option value={"VILLA"}>VILLA</option>
@@ -397,7 +397,7 @@ const UpdatePropertyModal = ({
 							disabled={isUpdating}
 							className="border border-[var(--info)] px-6 py-1 rounded-lg cursor-pointer text-[var(--primary)] font-bold flex items-center gap-2 justify-center hover:scale-105 transition-all duration-150 disabled:grayscale">
 							{isUpdating ? (
-								<span className="flex items-center justify-center animate-pulse">
+								<span className="flex items-center justify-center animate-spin">
 									<HouseWifi size={20} />
 								</span>
 							) : (

@@ -327,6 +327,7 @@ export const softDeleteProperty = async (
 ): Promise<Response | void> => {
 	const { id: propertyId } = req.params;
 	const userId = req.user?.userId as string;
+	const role = req.user?.role;
 	try {
 		// check if user exists;
 		const user = await prisma.user.findUnique({
@@ -347,16 +348,19 @@ export const softDeleteProperty = async (
 		const property = await prisma.property.findUnique({
 			where: {
 				id: propertyId,
-				ownerId: userId,
-				deletedAt: null,
 			},
 		});
 
-		if (!property) {
+		if (!property || property.deletedAt) {
 			return res.status(404).json({ error: "This property no longer exists" });
 		}
-		// a middleware will only allow owners or admin to delete property;
-		// allow delete if property belongs to current user;
+		//  only allow owners or admin to delete property;
+		if (property.ownerId !== userId && role !== "ADMIN") {
+			return res
+				.status(403)
+				.json({ error: "You are not authorized to delete this property" });
+		}
+		// allow delete if property belongs to current user or user is admin;
 		const propertyDeleted = await prisma.property.update({
 			where: {
 				id: propertyId,
@@ -387,6 +391,7 @@ export const updateProperty = async (
 	res: Response
 ): Promise<Response> => {
 	const userId = req.user?.userId as string;
+	const role = req.user?.role;
 	const { id: propertyId } = req.params;
 
 	try {
@@ -413,7 +418,7 @@ export const updateProperty = async (
 		const property = await prisma.property.findUnique({
 			where: { id: propertyId },
 		});
-		if (!property || property.ownerId !== userId)
+		if (!property || (property.ownerId !== userId && role !== "ADMIN"))
 			return res
 				.status(404)
 				.json({ error: "This property does not exist or you do not own it" });

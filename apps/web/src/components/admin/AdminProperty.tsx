@@ -5,12 +5,18 @@ import { toast } from "sonner";
 import api from "../../api";
 import { useState } from "react";
 import { handleError } from "../../utils/common";
+import UpdatePropertyModal, {
+	type PropertyAndFilesUpdateTypes,
+} from "../modals/UpdatePropertyModal";
 
 const AdminProperties = () => {
 	const { loadingProperties, properties, setProperties } =
 		useOutletContext<AdminOutletContext>();
 	const [deletingId, setDeletingId] = useState<string | null>(null);
 	const [deletedIds, setDeletedIds] = useState<Set<string>>(new Set());
+	const [isModalOpen, setIsModalOpen] = useState(false);
+	const [updatingId, setUpdatingId] = useState<string | null>(null);
+	// const updatedProperty = properties?.filter((p) => p.id === updatingId)[0];
 
 	async function handleDeleteProperty(id: string | null) {
 		if (!id) return;
@@ -31,6 +37,17 @@ const AdminProperties = () => {
 			setDeletingId(null);
 		}
 	}
+
+	const fetchAllProperties = async () => {
+		try {
+			const res = (await api.get("/properties")).data;
+			if (!res) throw new Error(res.error || "Failed to load properties");
+			setProperties(res.data);
+		} catch (error) {
+			console.error("Error refetching properties", error);
+			toast.error(handleError(error));
+		}
+	};
 
 	return (
 		<section className="w-full overflow-x-auto">
@@ -105,8 +122,17 @@ const AdminProperties = () => {
 									<button
 										type="button"
 										aria-label="update"
-										className="cursor-pointer text-blue-500 hover:text-blue-800">
-										<Edit />
+										disabled={updatingId === p.id}
+										onClick={() => {
+											setUpdatingId(p.id);
+											setIsModalOpen(true);
+										}}
+										className="cursor-pointer text-blue-500 hover:text-blue-800 disabled:text-blue-950 disabled:cursor-not-allowed">
+										{updatingId === p.id ? (
+											<Loader2 size={24} className="animate-spin" />
+										) : (
+											<Edit size={24} />
+										)}
 									</button>
 
 									<button
@@ -126,6 +152,19 @@ const AdminProperties = () => {
 										)}
 									</button>
 								</td>
+								<UpdatePropertyModal
+									open={!!updatingId && isModalOpen}
+									close={() => {
+										setUpdatingId(null);
+										setIsModalOpen(false);
+									}}
+									data={
+										properties.find(
+											(p) => p.id === updatingId
+										) as PropertyAndFilesUpdateTypes
+									}
+									onUpdated={() => fetchAllProperties()}
+								/>
 							</tr>
 						))}
 				</tbody>
