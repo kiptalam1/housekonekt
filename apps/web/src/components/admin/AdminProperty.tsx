@@ -1,10 +1,36 @@
-import { Loader2 } from "lucide-react";
+import { Edit, Loader2, Trash2 } from "lucide-react";
 import { useOutletContext } from "react-router-dom";
 import type { AdminOutletContext } from "../../pages/Admin";
+import { toast } from "sonner";
+import api from "../../api";
+import { useState } from "react";
+import { handleError } from "../../utils/common";
 
 const AdminProperties = () => {
-	const { loadingProperties, properties } =
+	const { loadingProperties, properties, setProperties } =
 		useOutletContext<AdminOutletContext>();
+	const [deletingId, setDeletingId] = useState<string | null>(null);
+	const [deletedIds, setDeletedIds] = useState<Set<string>>(new Set());
+
+	async function handleDeleteProperty(id: string | null) {
+		if (!id) return;
+		try {
+			setDeletingId(id);
+			const { data } = await api.patch(`/properties/${id}/delete`);
+			toast.success(data.message || "Property deleted successfully");
+			setDeletedIds((prev) => new Set([...prev, id]));
+			setProperties((prev) =>
+				prev.map((p) =>
+					p.id === id ? { ...p, deletedAt: new Date().toISOString() } : p
+				)
+			);
+		} catch (error) {
+			console.error("Error deleting property", error);
+			toast.error(handleError(error));
+		} finally {
+			setDeletingId(null);
+		}
+	}
 
 	return (
 		<section className="w-full overflow-x-auto">
@@ -27,6 +53,7 @@ const AdminProperties = () => {
 						<th className="p-1 text-left font-bold">Views</th>
 						<th className="p-1 text-left font-bold">Owner</th>
 						<th className="p-1 text-left font-bold">Created</th>
+						<th className="p-1 text-left font-bold">Actions</th>
 					</tr>
 				</thead>
 				<tbody>
@@ -46,7 +73,7 @@ const AdminProperties = () => {
 							<tr
 								key={p.id}
 								className={`border-b border-[var(--border-muted)] text-s ${
-									p.deletedAt != null
+									p.deletedAt != null || deletedIds.has(p.id)
 										? "line-through text-[var(--border)] text-sm"
 										: ""
 								}`}>
@@ -74,6 +101,31 @@ const AdminProperties = () => {
 								<td className="p-1 text-center">{p.views}</td>
 								<td className="p-1">{p.owner?.username}</td>
 								<td className="p-1  text-xs">{p.createdAt.split("T")[0]}</td>
+								<td className="p-1 text-xs text-center gap-4 space-x-4">
+									<button
+										type="button"
+										aria-label="update"
+										className="cursor-pointer text-blue-500 hover:text-blue-800">
+										<Edit />
+									</button>
+
+									<button
+										type="button"
+										aria-label="delete"
+										disabled={
+											p.deletedAt != null ||
+											deletingId === p.id ||
+											deletedIds.has(p.id)
+										}
+										onClick={() => handleDeleteProperty(p.id)}
+										className="cursor-pointer text-red-500 hover:text-red-800 disabled:text-red-950 disabled:cursor-not-allowed">
+										{deletingId === p.id ? (
+											<Loader2 size={24} className="animate-spin" />
+										) : (
+											<Trash2 size={24} />
+										)}
+									</button>
+								</td>
 							</tr>
 						))}
 				</tbody>

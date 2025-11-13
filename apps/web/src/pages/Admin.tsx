@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useAuth } from "../hooks/useAuth";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
@@ -36,6 +36,7 @@ export type AdminOutletContext = {
 	loadingUsers: boolean;
 	loadingProperties: boolean;
 	handleStatsUpdate: (newCounts: Partial<Stats>) => void;
+	setProperties: React.Dispatch<React.SetStateAction<Property[]>>
 };
 
 const Admin = () => {
@@ -53,18 +54,20 @@ const Admin = () => {
 	const navigate = useNavigate();
 	const location = useLocation();
 
-	const options = [
-		{ label: "Properties", path: "/admin" },
-		{ label: "All users", path: "/admin/all-users" },
-		{ label: "Owners", path: "/admin/owners" },
-	];
+	const options = useMemo(() => {
+		return [
+			{ label: "Properties", path: "/admin" },
+			{ label: "All users", path: "/admin/all-users" },
+			{ label: "Owners", path: "/admin/owners" },
+		];
+	}, []);
 	const [selectedIndex, setSelectedIndex] = useState(0);
 
 	// sync the selectedIndex with the current url;
 	useEffect(() => {
 		const current = options.findIndex((opt) => location.pathname === opt.path);
 		setSelectedIndex(current !== -1 ? current : 0);
-	}, [location.pathname]);
+	}, [location.pathname, options]);
 
 	function handleClick(index: number) {
 		setSelectedIndex(index);
@@ -168,6 +171,7 @@ const Admin = () => {
 					loadingProperties,
 					properties,
 					handleStatsUpdate,
+					setProperties,
 				}}
 			/>
 		</div>

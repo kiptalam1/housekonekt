@@ -1,3 +1,5 @@
+import { AxiosError } from "axios";
+
 export const PLACEHOLDER_SVG =
 	"data:image/svg+xml;utf8," +
 	encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" width="800" height="600" viewBox="0 0 800 600">
@@ -12,7 +14,6 @@ export const PLACEHOLDER_SVG =
       Image Coming Soon
     </text>
   </svg>`);
-
 
 export const AVATAR_PLACEHOLDER_SVG =
 	"data:image/svg+xml;utf8," +
@@ -70,13 +71,24 @@ export type Property = {
 	};
 };
 
+export function handleError(error: unknown) {
+	let toastError;
+	if (error instanceof AxiosError) {
+		toastError = error.response?.data.error;
+	} else if (error instanceof Error) {
+		toastError = error.message;
+	} else {
+		toastError = "Something went wrong. Try again later";
+	}
+	return toastError;
+}
+
 export function formatIsoDate(iso?: string) {
 	if (!iso) return "—";
 	const d = new Date(iso);
 	if (Number.isNaN(d.getTime())) return "Invalid date";
 	return d.toLocaleDateString("en-US", { dateStyle: "medium" });
 }
-
 
 export function formatDateTime(dateString: string | null) {
 	if (!dateString) return "";
@@ -112,4 +124,3 @@ export function formatDateTime(dateString: string | null) {
 		}) + ` ${time}`
 	);
 }
-
