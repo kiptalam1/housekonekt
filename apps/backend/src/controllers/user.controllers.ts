@@ -1,7 +1,6 @@
 import { type Response } from "express";
 import { PrismaClient } from "../../generated/prisma/client.js";
 import type { AuthenticatedRequest } from "../middlewares/auth.middlewares.js";
-import { error } from "console";
 
 const prisma = new PrismaClient();
 const isDev = process.env.NODE_ENV === "development";

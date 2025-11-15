@@ -11,6 +11,8 @@ import authRoutes from "./routes/auth.routes.js";
 import propertyRoutes from "./routes/property.routes.js";
 import userRoutes from "./routes/user.routes.js";
 import messageRoutes from "./routes/message.routes.js";
+import adminRoutes from "./routes/admin.routes.js";
+
 import { assignVisitorId } from "./middlewares/visitorId.middlewares.js";
 import { handleDMs } from "./socket/DMsHandler.js";
 
@@ -47,6 +49,8 @@ app.use("/api/auth", authRoutes);
 app.use("/api/properties", propertyRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/messages", messageRoutes);
+app.use("/api/admin", adminRoutes);
+
 
 //socket.io;
 io.on("connection", (socket) => {

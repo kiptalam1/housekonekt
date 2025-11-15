@@ -16,6 +16,7 @@ model User {
   role              Role               @default(USER)
   createdAt         DateTime           @default(now()) @db.Timestamp(6)
   updatedAt         DateTime?          @updatedAt @db.Timestamp(6)
+  deletedAt         DateTime?          
   refreshToken      String?
   avatarUrl         String?
   bio               String?
