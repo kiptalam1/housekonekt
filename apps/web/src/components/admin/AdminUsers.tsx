@@ -1,11 +1,35 @@
 import { Edit, Loader2, Trash2 } from "lucide-react";
 
-import { AVATAR_PLACEHOLDER_SVG, formatDateTime } from "../../utils/common";
+import {
+	AVATAR_PLACEHOLDER_SVG,
+	formatDateTime,
+	handleError,
+} from "../../utils/common";
 import { useOutletContext } from "react-router-dom";
 import type { AdminOutletContext } from "../../pages/Admin";
+import api from "../../api";
+import { toast } from "sonner";
+import { useState } from "react";
 
 const AdminUsers = () => {
 	const { users, loadingUsers } = useOutletContext<AdminOutletContext>();
+	const [deletingId, setDeletingId] = useState<string | null>(null);
+	const [deletedIds, setDeletedIds] = useState<Set<string>>(new Set());
+
+	async function handleDeleteUser(id: string) {
+		setDeletingId(id);
+		try {
+			const { data } = await api.patch(`/admin/user/${id}/delete`);
+			// if (!data.data) throw new Error("Failed to delete user");
+			toast.success(data.message);
+			setDeletedIds((prev) => new Set([...prev, id]));
+		} catch (error) {
+			console.error("Error deleting user", error);
+			toast.error(handleError(error));
+		} finally {
+			setDeletingId(null);
+		}
+	}
 
 	return (
 		<section className="w-full mx-auto">
@@ -68,8 +92,12 @@ const AdminUsers = () => {
 							users.map((u) => (
 								<tr
 									key={u.id}
-									className={`border-b border-[var(--border-muted)] text-s 
-								}`}>
+									className={`border-b border-[var(--border-muted)] text-s ${
+										u.deletedAt !== null || deletedIds.has(u.id)
+											? "line-through text-[var(--border)] text-sm"
+											: ""
+									} 
+								`}>
 									<td className="p-1">
 										<img
 											src={u.avatarUrl ?? AVATAR_PLACEHOLDER_SVG}
@@ -86,7 +114,7 @@ const AdminUsers = () => {
 									<td
 										className={`p-1 text-center ${
 											u.isVerified ? "text-green-600" : "text-red-600"
-										}`}>
+										} ${u.deletedAt !== null ? "text-[var(--border)]" : ""}`}>
 										{u.isVerified ? "Yes" : "No"}
 									</td>
 									<td className="p-1 whitespace-nowrap">{u.phone ?? "-"}</td>
@@ -115,8 +143,18 @@ const AdminUsers = () => {
 										<button
 											type="button"
 											aria-label="delete"
+											onClick={() => handleDeleteUser(u.id)}
+											disabled={
+												deletingId === u.id ||
+												u.deletedAt !== null ||
+												deletedIds.has(u.id)
+											}
 											className="cursor-pointer text-red-500 hover:text-red-800 disabled:text-red-950 disabled:cursor-not-allowed">
-											<Trash2 size={24} />
+											{deletingId === u.id ? (
+												<Loader2 size={24} className="animate-spin" />
+											) : (
+												<Trash2 size={24} />
+											)}
 										</button>
 									</td>
 								</tr>

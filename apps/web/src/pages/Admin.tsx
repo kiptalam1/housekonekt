@@ -16,6 +16,7 @@ type User = {
 	bio: string | null;
 	lastLogin: string | null;
 	createdAt: string;
+	deletedAt: string | null;
 	avatarUrl: string | null;
 	_count: {
 		sentMessages: number;

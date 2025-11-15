@@ -117,6 +117,7 @@ export const getAllUsers = async (
 				avatarUrl: true,
 				lastLogin: true,
 				createdAt: true,
+				deletedAt: true,
 				_count: {
 					select: {
 						sentMessages: true,
