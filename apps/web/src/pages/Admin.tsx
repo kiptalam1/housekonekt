@@ -84,8 +84,11 @@ const Admin = () => {
 				if (!res) throw new Error(res.error || "Failed to load users");
 
 				setUsers(res.data);
+				const notDeletedUsers = res.data.filter(
+					(u: User) => u.deletedAt == null
+				);
 				handleStatsUpdate({
-					all_users: res.data.length,
+					all_users: notDeletedUsers.length,
 					owners: res.data.filter((u: User) => u.role === "OWNER").length,
 				});
 			} catch (error) {
@@ -114,7 +117,10 @@ const Admin = () => {
 				if (!res) throw new Error(res.error || "Failed to load properties");
 
 				setProperties(res.data);
-				handleStatsUpdate({ properties: res.data.length });
+				const notDeletedProperties = res.data.filter(
+					(p: Property) => p.deletedAt == null
+				);
+				handleStatsUpdate({ properties: notDeletedProperties.length });
 			} catch (error) {
 				console.error("Error fetching properties", error);
 				toast.error(
