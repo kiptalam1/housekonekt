@@ -1,16 +1,39 @@
 import { Edit, Loader2, Trash2 } from "lucide-react";
-import { useMemo } from "react";
-import { AVATAR_PLACEHOLDER_SVG, formatDateTime } from "../../utils/common";
+import { useMemo, useState } from "react";
+import {
+	AVATAR_PLACEHOLDER_SVG,
+	formatDateTime,
+	handleError,
+} from "../../utils/common";
 import { useOutletContext } from "react-router-dom";
 import type { AdminOutletContext } from "../../pages/Admin";
+import { toast } from "sonner";
+import api from "../../api";
 
 const AdminOwners = () => {
 	const { users, loadingUsers } = useOutletContext<AdminOutletContext>();
+	const [deletingId, setDeletingId] = useState<string | null>(null);
+	const [deletedIds, setDeletedIds] = useState<Set<string>>(new Set());
 
 	const owners = useMemo(
 		() => users?.filter((u) => u.role === "OWNER") ?? [],
 		[users]
 	);
+
+	async function handleDeleteOwner(id: string) {
+		setDeletingId(id);
+		try {
+			const { data } = await api.patch(`/admin/owner-property/${id}/delete`);
+
+			toast.success(data.message);
+			setDeletedIds((prev) => new Set([...prev, id]));
+		} catch (error) {
+			console.error("Error deleting user", error);
+			toast.error(handleError(error));
+		} finally {
+			setDeletingId(null);
+		}
+	}
 
 	return (
 		<section className="w-full mx-auto">
@@ -76,7 +99,11 @@ const AdminOwners = () => {
 							owners.map((o) => (
 								<tr
 									key={o.id}
-									className={`border-b border-[var(--border-muted)] text-s 
+									className={`border-b border-[var(--border-muted)] text-s ${
+										o.deletedAt !== null || deletedIds.has(o.id)
+											? "line-through text-[var(--border)] text-sm"
+											: ""
+									} 
 								}`}>
 									<td className="p-1">
 										<img
@@ -123,6 +150,8 @@ const AdminOwners = () => {
 										<button
 											type="button"
 											aria-label="delete"
+											onClick={() => handleDeleteOwner(o.id)}
+											disabled={deletingId === o.id}
 											className="cursor-pointer text-red-500 hover:text-red-800 disabled:text-red-950 disabled:cursor-not-allowed">
 											<Trash2 size={24} />
 										</button>
