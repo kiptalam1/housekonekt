@@ -10,11 +10,13 @@ import type { AdminOutletContext } from "../../pages/Admin";
 import api from "../../api";
 import { toast } from "sonner";
 import { useState } from "react";
+import UpdateUserModal from "../modals/UpdateUserModal";
 
 const AdminUsers = () => {
 	const { users, loadingUsers } = useOutletContext<AdminOutletContext>();
 	const [deletingId, setDeletingId] = useState<string | null>(null);
 	const [deletedIds, setDeletedIds] = useState<Set<string>>(new Set());
+	const [modalOpen, setModalOpen] = useState(false);
 
 	async function handleDeleteUser(id: string) {
 		setDeletingId(id);
@@ -136,6 +138,7 @@ const AdminUsers = () => {
 										<button
 											type="button"
 											aria-label="update"
+											onClick={() => setModalOpen(true)}
 											className="cursor-pointer text-blue-500 hover:text-blue-800 disabled:text-blue-950 disabled:cursor-not-allowed">
 											<Edit size={24} />
 										</button>
@@ -162,6 +165,7 @@ const AdminUsers = () => {
 					</tbody>
 				</table>
 			</div>
+			<UpdateUserModal open={modalOpen} onClose={() => setModalOpen(false)} />
 		</section>
 	);
 };
