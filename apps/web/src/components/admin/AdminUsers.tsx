@@ -6,7 +6,7 @@ import {
 	handleError,
 } from "../../utils/common";
 import { useOutletContext } from "react-router-dom";
-import type { AdminOutletContext } from "../../pages/Admin";
+import type { AdminOutletContext, User } from "../../pages/Admin";
 import api from "../../api";
 import { toast } from "sonner";
 import { useState } from "react";
@@ -16,6 +16,8 @@ const AdminUsers = () => {
 	const { users, loadingUsers } = useOutletContext<AdminOutletContext>();
 	const [deletingId, setDeletingId] = useState<string | null>(null);
 	const [deletedIds, setDeletedIds] = useState<Set<string>>(new Set());
+	// const [updatindId, setUpdatingId] = useState<string | null>(null);
+	const [updatingUser, setUpdatingUser] = useState<User | null>(null);
 	const [modalOpen, setModalOpen] = useState(false);
 
 	async function handleDeleteUser(id: string) {
@@ -138,7 +140,10 @@ const AdminUsers = () => {
 										<button
 											type="button"
 											aria-label="update"
-											onClick={() => setModalOpen(true)}
+											onClick={() => {
+												setModalOpen(true);
+												setUpdatingUser(u);
+											}}
 											className="cursor-pointer text-blue-500 hover:text-blue-800 disabled:text-blue-950 disabled:cursor-not-allowed">
 											<Edit size={24} />
 										</button>
@@ -163,9 +168,23 @@ const AdminUsers = () => {
 								</tr>
 							))}
 					</tbody>
+					{updatingUser && (
+						<UpdateUserModal
+							open={modalOpen}
+							onClose={() => setModalOpen(false)}
+							updateData={{
+								id: updatingUser.id,
+								username: updatingUser.username,
+								email: updatingUser.email,
+								role: updatingUser.role,
+								phone: updatingUser.phone ?? undefined,
+								bio: updatingUser.bio ?? undefined,
+								avatarUrl: updatingUser.avatarUrl ?? null,
+							}}
+						/>
+					)}
 				</table>
 			</div>
-			<UpdateUserModal open={modalOpen} onClose={() => setModalOpen(false)} />
 		</section>
 	);
 };

@@ -6,7 +6,7 @@ import { AxiosError } from "axios";
 import api from "../api";
 import type { Property } from "../utils/common";
 
-type User = {
+export type User = {
 	id: string;
 	username: string;
 	email: string;
