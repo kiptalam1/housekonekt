@@ -17,12 +17,14 @@ export type UpdateUserModalTypes = {
 		bio?: string;
 		avatarUrl: string | null;
 	};
+	onUpdate: () => void;
 };
 
 const UpdateUserModal = ({
 	open,
 	onClose,
 	updateData,
+	onUpdate,
 }: UpdateUserModalTypes) => {
 	const [formData, setFormData] = useState(
 		updateData || {
@@ -84,7 +86,7 @@ const UpdateUserModal = ({
 		data.append("email", formData.email);
 		data.append("role", formData.role);
 		if (formData.bio) data.append("bio", formData.bio);
-		if (formData.phone) data.append("phone", formData.phone);
+		if (formData.phone) data.append("phone", formData.phone ?? "");
 
 		if (file) {
 			data.append("avatarUrl", file);
@@ -93,13 +95,18 @@ const UpdateUserModal = ({
 		setIsUpdatingUser(true);
 
 		try {
-			const res = await api.patch(`/users/{id}/update`, data, {
-				headers: {
-					"Content-Type": "multipart/form-data",
-				},
-			});
+			const res = await api.patch(
+				`/users/user/${updateData?.id}/update`,
+				data,
+				{
+					headers: {
+						"Content-Type": "multipart/form-data",
+					},
+				}
+			);
 
 			toast.success(res.data.message || "User updated successfully");
+			onUpdate();
 		} catch (error) {
 			console.error("Error updating user", error);
 			toast.error(handleError(error));

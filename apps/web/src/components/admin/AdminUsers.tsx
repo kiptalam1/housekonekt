@@ -20,6 +20,7 @@ const AdminUsers = () => {
 	const [updatingUser, setUpdatingUser] = useState<User | null>(null);
 	const [modalOpen, setModalOpen] = useState(false);
 
+
 	async function handleDeleteUser(id: string) {
 		setDeletingId(id);
 		try {
@@ -180,6 +181,9 @@ const AdminUsers = () => {
 								phone: updatingUser.phone ?? undefined,
 								bio: updatingUser.bio ?? undefined,
 								avatarUrl: updatingUser.avatarUrl ?? null,
+							}}
+							onUpdate={() => {
+								setModalOpen(false);
 							}}
 						/>
 					)}
