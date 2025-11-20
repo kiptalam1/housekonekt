@@ -149,6 +149,7 @@ interface UpdateUserBody {
 	bio?: string;
 	phone?: string;
 	avatarUrl?: string;
+	removeAvatar?: boolean;
 }
 
 export const updateUser = async (
@@ -162,7 +163,7 @@ export const updateUser = async (
 	}
 	try {
 		const body = req.body as UpdateUserBody;
-		const { username, email, bio, phone, role } = body;
+		const { username, email, bio, phone, role, removeAvatar } = body;
 		const avatarFile = req.file;
 
 		// check if user to update exists;
@@ -240,6 +241,11 @@ export const updateUser = async (
 
 			updateData.avatarUrl = { set: cloudinaryResult.secure_url };
 			updateData.public_id = { set: cloudinaryResult.public_id };
+		}
+		if (removeAvatar && user.public_id) {
+			await cloudinary.uploader.destroy(user.public_id);
+			updateData.avatarUrl = { set: null };
+			updateData.public_id = { set: null };
 		}
 
 		const updatedUser = await prisma.user.update({

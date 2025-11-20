@@ -2,7 +2,7 @@ import { useEffect, useState, type ChangeEvent, type FormEvent } from "react";
 import { toast } from "sonner";
 import { handleError } from "../../utils/common";
 import api from "../../api";
-import { Loader2 } from "lucide-react";
+import { Loader2, X } from "lucide-react";
 import type { User } from "../../pages/Admin";
 
 export type UpdateUserModalTypes = {
@@ -17,6 +17,7 @@ export type UpdateUserModalTypes = {
 		phone?: string;
 		bio?: string;
 		avatarUrl: string | null;
+		removeAvatar?: boolean;
 	};
 	onUpdate: (user: User) => void;
 };
@@ -27,16 +28,11 @@ const UpdateUserModal = ({
 	updateData,
 	onUpdate,
 }: UpdateUserModalTypes) => {
-	const [formData, setFormData] = useState(
-		updateData || {
-			username: "",
-			email: "",
-			role: "USER",
-			phone: "",
-			bio: "",
-			avatarUrl: "",
-		}
-	);
+	const [formData, setFormData] = useState({
+		...updateData,
+		avatarUrl: updateData?.avatarUrl ?? null,
+		removeAvatar: false,
+	});
 	const [file, setFile] = useState<File | null>(null);
 	const [preview, setPreview] = useState("");
 	const [isUpdatingUser, setIsUpdatingUser] = useState(false);
@@ -83,12 +79,12 @@ const UpdateUserModal = ({
 		e.preventDefault();
 
 		const data = new FormData();
-		data.append("username", formData.username);
-		data.append("email", formData.email);
-		data.append("role", formData.role);
+		data.append("username", formData.username ?? "");
+		data.append("email", formData.email ?? "");
+		data.append("role", formData.role ?? "");
 		if (formData.bio) data.append("bio", formData.bio);
 		if (formData.phone) data.append("phone", formData.phone ?? "");
-
+		if (formData.removeAvatar) data.append("removeAvatar", "true");
 		if (file) {
 			data.append("avatarUrl", file);
 		}
@@ -209,11 +205,29 @@ const UpdateUserModal = ({
 							className="border border-[var(--highlight)] outline-none rounded-xl w-full bg-[var(--bg)] file:px-4 file:py-2 file:rounded-xl file:bg-[var(--primary)] file:border-0 file:text-white file:cursor-pointer text-sm"
 						/>
 						{preview && (
-							<img
-								src={preview}
-								alt="Preview"
-								className="w-24 h-24 object-cover rounded-lg mt-2"
-							/>
+							<div className="relative w-24 h-24 mt-8">
+								<img
+									src={preview}
+									alt="Preview"
+									className="relative h-full w-full object-cover rounded-lg"
+								/>
+
+								<button
+									type="button"
+									aria-label="remove avatar image"
+									className="absolute -top-6 -right-1 text-red-700 cursor-pointer hover:scale-125 duration-150"
+									onClick={() => {
+										setPreview("");
+										setFile(null);
+										setFormData((prev) => ({
+											...prev,
+											avatarUrl: null,
+											removeAvatar: true,
+										}));
+									}}>
+									<X size={24} />
+								</button>
+							</div>
 						)}
 					</div>
 
