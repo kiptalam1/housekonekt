@@ -16,9 +16,10 @@ model User {
   role              Role               @default(USER)
   createdAt         DateTime           @default(now()) @db.Timestamp(6)
   updatedAt         DateTime?          @updatedAt @db.Timestamp(6)
-  deletedAt         DateTime?          
+  deletedAt         DateTime?
   refreshToken      String?
   avatarUrl         String?
+  public_id         String?
   bio               String?
   isVerified        Boolean            @default(false)
   lastLogin         DateTime?
