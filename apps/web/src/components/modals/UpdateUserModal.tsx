@@ -3,6 +3,7 @@ import { toast } from "sonner";
 import { handleError } from "../../utils/common";
 import api from "../../api";
 import { Loader2 } from "lucide-react";
+import type { User } from "../../pages/Admin";
 
 export type UpdateUserModalTypes = {
 	open: boolean;
@@ -17,7 +18,7 @@ export type UpdateUserModalTypes = {
 		bio?: string;
 		avatarUrl: string | null;
 	};
-	onUpdate: () => void;
+	onUpdate: (user: User) => void;
 };
 
 const UpdateUserModal = ({
@@ -106,7 +107,7 @@ const UpdateUserModal = ({
 			);
 
 			toast.success(res.data.message || "User updated successfully");
-			onUpdate();
+			onUpdate(res.data.data);
 		} catch (error) {
 			console.error("Error updating user", error);
 			toast.error(handleError(error));

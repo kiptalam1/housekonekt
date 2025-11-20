@@ -9,17 +9,21 @@ import { useOutletContext } from "react-router-dom";
 import type { AdminOutletContext, User } from "../../pages/Admin";
 import api from "../../api";
 import { toast } from "sonner";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import UpdateUserModal from "../modals/UpdateUserModal";
 
 const AdminUsers = () => {
-	const { users, loadingUsers } = useOutletContext<AdminOutletContext>();
+	const { users: outletUsers, loadingUsers } =
+		useOutletContext<AdminOutletContext>();
+	const [users, setUsers] = useState<User[]>(outletUsers ?? []);
 	const [deletingId, setDeletingId] = useState<string | null>(null);
 	const [deletedIds, setDeletedIds] = useState<Set<string>>(new Set());
-	// const [updatindId, setUpdatingId] = useState<string | null>(null);
 	const [updatingUser, setUpdatingUser] = useState<User | null>(null);
 	const [modalOpen, setModalOpen] = useState(false);
 
+	useEffect(() => {
+		if (outletUsers) setUsers(outletUsers);
+	}, [outletUsers]);
 
 	async function handleDeleteUser(id: string) {
 		setDeletingId(id);
@@ -35,6 +39,11 @@ const AdminUsers = () => {
 			setDeletingId(null);
 		}
 	}
+
+	const handleUpdateUser = (updated: User) => {
+		setUsers((prev) => prev.map((u) => (u.id === updated.id ? updated : u)));
+		setModalOpen(false);
+	};
 
 	return (
 		<section className="w-full mx-auto">
@@ -169,26 +178,24 @@ const AdminUsers = () => {
 								</tr>
 							))}
 					</tbody>
-					{updatingUser && (
-						<UpdateUserModal
-							open={modalOpen}
-							onClose={() => setModalOpen(false)}
-							updateData={{
-								id: updatingUser.id,
-								username: updatingUser.username,
-								email: updatingUser.email,
-								role: updatingUser.role,
-								phone: updatingUser.phone ?? undefined,
-								bio: updatingUser.bio ?? undefined,
-								avatarUrl: updatingUser.avatarUrl ?? null,
-							}}
-							onUpdate={() => {
-								setModalOpen(false);
-							}}
-						/>
-					)}
 				</table>
 			</div>
+			{updatingUser && (
+				<UpdateUserModal
+					open={modalOpen}
+					onClose={() => setModalOpen(false)}
+					updateData={{
+						id: updatingUser.id,
+						username: updatingUser.username,
+						email: updatingUser.email,
+						role: updatingUser.role,
+						phone: updatingUser.phone ?? undefined,
+						bio: updatingUser.bio ?? undefined,
+						avatarUrl: updatingUser.avatarUrl ?? null,
+					}}
+					onUpdate={handleUpdateUser}
+				/>
+			)}
 		</section>
 	);
 };
