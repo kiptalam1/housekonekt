@@ -1,9 +1,30 @@
-import { LoaderCircle } from "lucide-react";
+import { Edit3, LoaderCircle } from "lucide-react";
 import { useAuth } from "../hooks/useAuth";
 import { AVATAR_PLACEHOLDER_SVG, formatIsoDate } from "../utils/common";
+import { useEffect, useState } from "react";
+import UpdateUserProfile from "../components/modals/UpdateUserProfile";
+import type { UserType } from "../contexts/AuthContext";
+// import type { UserType } from "../contexts/AuthContext";
 
 const MyProfile = () => {
-	const { user, loading } = useAuth();
+	const { user: contextUser, loading, refreshUser } = useAuth();
+	const [modalOpen, setModalOpen] = useState(false);
+	const [user, setUser] = useState(contextUser ?? null);
+
+	useEffect(() => {
+		setUser(contextUser ?? null);
+	}, [contextUser]);
+
+	useEffect(() => {
+		refreshUser();
+	}, [refreshUser]);
+
+	const handleUpdateUser = (newUser: UserType) => {
+		setModalOpen(false);
+		setUser((prev) => (prev?.id === newUser.id ? newUser : prev));
+		refreshUser();
+	};
+
 	return (
 		<section className="py-6 w-full">
 			{loading && !user && (
@@ -24,9 +45,19 @@ const MyProfile = () => {
 						/>
 					</div>
 					<div className="px-4 space-y-2">
-						<p className="text-sm text-[var(--info)] rounded-full border border-[var(--info)] w-fit px-2">
-							{user?.role}
-						</p>
+						<div className="flex items-center justify-between sm:justify-normal gap-40">
+							<p className="text-sm text-[var(--info)] rounded-full border border-[var(--info)] w-fit px-2">
+								{user?.role}
+							</p>
+							<span
+								onClick={() => {
+									setUser(user);
+									setModalOpen(true);
+								}}
+								className="cursor-pointer hover:text-[var(--primary)] duration-150">
+								<Edit3 size={20} />
+							</span>
+						</div>
 
 						<p className="font-bold text-lg sm:text-xl">{user?.username}</p>
 						<p className="font-semibold italic">{user.email}</p>
@@ -60,6 +91,24 @@ const MyProfile = () => {
 						</p>
 					</div>
 				</div>
+			)}
+			{user && (
+				<UpdateUserProfile
+					open={modalOpen}
+					onClose={() => {
+						setModalOpen(false);
+					}}
+					onUpdate={handleUpdateUser}
+					updateData={{
+						id: user!.id,
+						email: user!.email,
+						username: user!.username,
+						role: user!.role,
+						bio: user!.bio,
+						phone: user!.phone,
+						avatarUrl: user!.avatarUrl,
+					}}
+				/>
 			)}
 		</section>
 	);

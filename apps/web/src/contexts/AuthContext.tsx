@@ -1,5 +1,6 @@
 import {
 	createContext,
+	useCallback,
 	useEffect,
 	useState,
 	type Dispatch,
@@ -35,6 +36,7 @@ type AuthTypes = {
 		password: string;
 	}) => Promise<boolean | void>;
 	logout: () => Promise<boolean | void>;
+	refreshUser: () => Promise<UserType | void>;
 };
 
 export const AuthContext = createContext<AuthTypes | null>(null);
@@ -97,6 +99,16 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 		}
 	};
 
+	// fetch me;
+	const refreshUser = useCallback(async () => {
+		try {
+			const { data } = await api.get("/users/me");
+			setUser(data.data.user);
+		} catch (err) {
+			console.error("refreshUser failed", err);
+		}
+	}, []);
+
 	// silently auto-refresh token;
 	const refreshToken = async () => {
 		try {
@@ -106,7 +118,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 			}
 			return true;
 		} catch (error) {
-			if (import.meta.env.DEV) console.warn("silent token refresh failed", error)
+			if (import.meta.env.DEV)
+				console.warn("silent token refresh failed", error);
 			return false;
 		}
 	};
@@ -115,10 +128,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 	useEffect(() => {
 		const init = async () => {
 			await refreshToken(); // this auto logs in if refresh-token is present;
+			await refreshUser();
 			setLoading(false);
 		};
 		init();
-	}, []);
+	}, [refreshUser]);
 
 	useEffect(() => {
 		if (!user) return;
@@ -137,6 +151,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 				setUser,
 				loginUser,
 				logout,
+				refreshUser,
 			}}>
 			{children}
 		</AuthContext.Provider>
