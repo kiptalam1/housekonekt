@@ -1,24 +1,38 @@
 import { Edit, Loader2, Trash2 } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
 	AVATAR_PLACEHOLDER_SVG,
 	formatDateTime,
 	handleError,
 } from "../../utils/common";
 import { useOutletContext } from "react-router-dom";
-import type { AdminOutletContext } from "../../pages/Admin";
+import type { AdminOutletContext, User } from "../../pages/Admin";
 import { toast } from "sonner";
 import api from "../../api";
+import UpdateUserModal from "../modals/UpdateUserModal";
 
 const AdminOwners = () => {
-	const { users, loadingUsers } = useOutletContext<AdminOutletContext>();
+	const { users: outletUsers, loadingUsers } =
+		useOutletContext<AdminOutletContext>();
+	const [users, setUsers] = useState<User[]>(outletUsers ?? []);
 	const [deletingId, setDeletingId] = useState<string | null>(null);
 	const [deletedIds, setDeletedIds] = useState<Set<string>>(new Set());
+	const [updatingUser, setUpdatingUser] = useState<User | null>(null);
+	const [modalOpen, setModalOpen] = useState(false);
+
+	useEffect(() => {
+		if (outletUsers) setUsers(outletUsers);
+	}, [outletUsers]);
 
 	const owners = useMemo(
 		() => users?.filter((u) => u.role === "OWNER") ?? [],
 		[users]
 	);
+
+	const handleUpdateUser = (updated: User) => {
+		setUsers((prev) => prev.map((u) => (u.id === updated.id ? updated : u)));
+		setModalOpen(false);
+	};
 
 	async function handleDeleteOwner(id: string) {
 		setDeletingId(id);
@@ -143,6 +157,10 @@ const AdminOwners = () => {
 										<button
 											type="button"
 											aria-label="update"
+											onClick={() => {
+												setModalOpen(true);
+												setUpdatingUser(o);
+											}}
 											className="cursor-pointer text-blue-500 hover:text-blue-800 disabled:text-blue-950 disabled:cursor-not-allowed">
 											<Edit size={24} />
 										</button>
@@ -161,6 +179,25 @@ const AdminOwners = () => {
 					</tbody>
 				</table>
 			</div>
+			{updatingUser && (
+				<UpdateUserModal
+					open={modalOpen}
+					onClose={() => {
+						setModalOpen(false);
+						setUpdatingUser(null);
+					}}
+					updateData={{
+						id: updatingUser.id,
+						username: updatingUser.username,
+						email: updatingUser.email,
+						role: updatingUser.role,
+						phone: updatingUser.phone ?? undefined,
+						bio: updatingUser.bio ?? undefined,
+						avatarUrl: updatingUser.avatarUrl ?? null,
+					}}
+					onUpdate={handleUpdateUser}
+				/>
+			)}
 		</section>
 	);
 };
