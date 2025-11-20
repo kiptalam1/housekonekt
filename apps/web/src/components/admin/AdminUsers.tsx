@@ -183,7 +183,10 @@ const AdminUsers = () => {
 			{updatingUser && (
 				<UpdateUserModal
 					open={modalOpen}
-					onClose={() => setModalOpen(false)}
+					onClose={() => {
+						setModalOpen(false);
+						setUpdatingUser(null);
+					}}
 					updateData={{
 						id: updatingUser.id,
 						username: updatingUser.username,

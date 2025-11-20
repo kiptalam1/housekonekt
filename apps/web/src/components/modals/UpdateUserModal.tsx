@@ -180,7 +180,7 @@ const UpdateUserModal = ({
 							type="text"
 							name="phone"
 							id="phone"
-							value={formData.phone}
+							value={formData.phone ?? ""}
 							onChange={handleInputChange}
 							className="border border-[var(--highlight)] outline-none rounded-xl p-2 w-full bg-[var(--bg)]"
 						/>
@@ -192,7 +192,7 @@ const UpdateUserModal = ({
 							autoFocus
 							name="bio"
 							id="bio"
-							value={formData.bio}
+							value={formData.bio ?? ""}
 							onChange={handleTextAreaChange}
 							className="border border-[var(--highlight)] outline-none rounded-xl p-2 w-full bg-[var(--bg)] min-h-10 max-h-[200px] overflow-y-auto hide-scrollbar"
 						/>
