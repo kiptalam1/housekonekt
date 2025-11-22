@@ -1,6 +1,6 @@
 import crypto from "crypto";
 import jwt from "jsonwebtoken";
-import { PrismaClient, Role } from "../../generated/prisma/client.js";
+import { PrismaClient, type Role } from "@prisma/client";
 import type { Request, Response } from "express";
 import { comparePasswords, hashUserPassword } from "../utils/password.utils.js";
 import {

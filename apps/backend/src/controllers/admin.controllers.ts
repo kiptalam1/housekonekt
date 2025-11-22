@@ -1,6 +1,6 @@
 import type { NextFunction, Response, Request } from "express";
 import type { AuthenticatedRequest } from "../middlewares/auth.middlewares.js";
-import { PrismaClient } from "../../generated/prisma/client.js";
+import { Prisma, PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
@@ -107,31 +107,33 @@ export async function softDeleteOwnerAndProperties(
 		}
 
 		// if user is owner, then update deletedAt to datetime;
-		const result = await prisma.$transaction(async (tx) => {
-			// soft-delete user;
-			const deletedOwner = await tx.user.update({
-				where: { id: userID },
-				data: {
-					deletedAt: new Date(),
-				},
-				omit: {
-					password: true,
-					refreshToken: true,
-				},
-			});
+		const result = await prisma.$transaction(
+			async (tx: Prisma.TransactionClient) => {
+				// soft-delete user;
+				const deletedOwner = await tx.user.update({
+					where: { id: userID },
+					data: {
+						deletedAt: new Date(),
+					},
+					omit: {
+						password: true,
+						refreshToken: true,
+					},
+				});
 
-			// soft-delete all owned properties
-			const deletedProperties = await tx.property.updateMany({
-				where: {
-					ownerId: userID,
-				},
-				data: {
-					deletedAt: new Date(),
-				},
-			});
+				// soft-delete all owned properties
+				const deletedProperties = await tx.property.updateMany({
+					where: {
+						ownerId: userID,
+					},
+					data: {
+						deletedAt: new Date(),
+					},
+				});
 
-			return { deletedOwner, deletedProperties };
-		});
+				return { deletedOwner, deletedProperties };
+			}
+		);
 
 		return res.status(200).json({
 			message: "Owner and Properties deleted successfully",

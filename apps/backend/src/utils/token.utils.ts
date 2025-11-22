@@ -1,6 +1,6 @@
 import jwt from "jsonwebtoken";
 import type { Request, Response } from "express";
-import type { Role } from "../../generated/prisma/client.js";
+import type { Role } from "@prisma/client";
 
 const isProd = process.env.NODE_ENV === "production";
 export const generateAccessTokenAndSetCookie = (

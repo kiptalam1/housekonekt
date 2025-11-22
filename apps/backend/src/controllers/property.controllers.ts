@@ -1,11 +1,11 @@
-import { Prisma, type Property } from "../../generated/prisma/client.js";
+import { Prisma, type Property } from "@prisma/client";
 import type { Request, Response } from "express";
 import type { AuthenticatedRequest } from "../middlewares/auth.middlewares.js";
 import {
 	PrismaClient,
 	PropertyType,
 	Status,
-} from "../../generated/prisma/client.js";
+} from "@prisma/client";
 import cloudinary from "../configs/cloudinary.configs.js";
 
 const prisma = new PrismaClient();

@@ -1,7 +1,7 @@
 import type { Response } from "express";
-import { PrismaClient } from "../../generated/prisma/client.js";
+import { PrismaClient } from "@prisma/client";
 import type { AuthenticatedRequest } from "../middlewares/auth.middlewares.js";
-import type { Prisma } from "../../generated/prisma/client.js";
+import type { Prisma } from "@prisma/client";
 import cloudinary from "../configs/cloudinary.configs.js";
 import { MulterError } from "multer";
 import type { UploadApiResponse } from "cloudinary";
