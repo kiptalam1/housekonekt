@@ -18,10 +18,11 @@ export const generateAccessTokenAndSetCookie = (
 
 	res.cookie("accessToken", token, {
 		httpOnly: true,
-		sameSite: isProd ? "none" : "lax",
-		secure: isProd,
+		sameSite: "none",
+		secure: true,
 		maxAge: 15 * 60 * 1000,
 		partitioned: isProd,
+		path: "/",
 	});
 
 	return token;
@@ -43,10 +44,11 @@ export const generateRefreshTokenAndSetCookie = (
 
 	res.cookie("refreshToken", refreshToken, {
 		httpOnly: true,
-		sameSite: isProd ? "none" : "lax",
-		secure: isProd,
+		sameSite: "none",
+		secure: true,
 		maxAge: 7 * 24 * 60 * 60 * 1000,
 		partitioned: isProd,
+		path: "/",
 	});
 
 	return refreshToken;

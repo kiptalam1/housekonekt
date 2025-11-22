@@ -162,14 +162,16 @@ export const logoutUser = async (
 ): Promise<Response> => {
 	res.clearCookie("accessToken", {
 		httpOnly: true,
-		sameSite: isProd ? "none" : "lax",
-		secure: isProd,
+		sameSite: "none",
+		secure: true,
+		path: "/",
 	});
 
 	res.clearCookie("refreshToken", {
 		httpOnly: true,
-		sameSite: isProd ? "none" : "lax",
-		secure: isProd,
+		sameSite: "none",
+		secure: true,
+		path: "/",
 	});
 
 	return res.status(200).json({

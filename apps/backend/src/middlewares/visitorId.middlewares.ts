@@ -8,11 +8,12 @@ export const assignVisitorId = (req: Request, res: Response, next: NextFunction
     const visitorId = uuidv4()
 
     res.cookie("visitorId", visitorId, {
-      httpOnly: true,
-      sameSite: 'lax',
-      secure: process.env.NODE_ENV === "production",
-      maxAge: 30 * 24 * 60 * 60 * 1000 // 30 days
-    })
+			httpOnly: true,
+			sameSite: "none",
+			secure: true,
+			maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
+			path: "/",
+		});
   }
   next();
 }
