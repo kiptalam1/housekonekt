@@ -13,6 +13,7 @@ export const assignVisitorId = (req: Request, res: Response, next: NextFunction
 			secure: true,
 			maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
 			path: "/",
+			partitioned: true,
 		});
   }
   next();

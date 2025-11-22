@@ -2,7 +2,7 @@ import jwt from "jsonwebtoken";
 import type { Request, Response } from "express";
 import type { Role } from "@prisma/client";
 
-const isProd = process.env.NODE_ENV === "production";
+// const isProd = process.env.NODE_ENV === "production";
 export const generateAccessTokenAndSetCookie = (
 	_req: Request,
 	res: Response,
@@ -21,7 +21,7 @@ export const generateAccessTokenAndSetCookie = (
 		sameSite: "none",
 		secure: true,
 		maxAge: 15 * 60 * 1000,
-		partitioned: isProd,
+		partitioned: true,
 		path: "/",
 	});
 
@@ -47,7 +47,7 @@ export const generateRefreshTokenAndSetCookie = (
 		sameSite: "none",
 		secure: true,
 		maxAge: 7 * 24 * 60 * 60 * 1000,
-		partitioned: isProd,
+		partitioned: true,
 		path: "/",
 	});
 
