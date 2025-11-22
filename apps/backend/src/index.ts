@@ -35,7 +35,11 @@ app.use(cookieParser());
 app.use(assignVisitorId);
 app.use(
 	cors({
-		origin: ["http://localhost:3000"],
+		origin: [
+			"https://housekonekt.onrender.com",
+
+			// "http://localhost:3000"
+		],
 		credentials: true,
 	})
 );
