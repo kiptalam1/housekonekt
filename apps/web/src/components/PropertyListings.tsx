@@ -52,6 +52,11 @@ const PropertyListings = () => {
 		<section className="py-8">
 			<div className="max-w-7xl mx-auto">
 				<div className="flex flex-wrap gap-5 lg:gap-4 justify-center lg:justify-start">
+					{!loading && property.length === 0 && (
+						<p className="text-center text-[var(--text-muted)] italic mx-auto">
+							No properties yet...
+						</p>
+					)}
 					{loading
 						? Array.from({ length: 6 }).map((_, i) => (
 								<PropertyCardSkeleton key={i} />
