@@ -1,6 +1,5 @@
 generator client {
   provider = "prisma-client-js"
-  // output   = "../generated/prisma"
 }
 
 datasource db {
@@ -9,77 +8,54 @@ datasource db {
 }
 
 model User {
-  id                String             @id @default(uuid())
-  username          String             @db.VarChar(50)
-  email             String             @unique @db.VarChar(100)
+  id                String              @id @default(uuid())
+  username          String              @db.VarChar(50)
+  email             String              @unique @db.VarChar(100)
   password          String
-  role              Role               @default(USER)
-  createdAt         DateTime           @default(now()) @db.Timestamp(6)
-  updatedAt         DateTime?          @updatedAt @db.Timestamp(6)
+  role              Role                @default(USER)
+  createdAt         DateTime            @default(now()) @db.Timestamp(6)
+  updatedAt         DateTime?           @default(now()) @updatedAt @db.Timestamp(6)
   deletedAt         DateTime?
   refreshToken      String?
   avatarUrl         String?
-  public_id         String?
   bio               String?
-  isVerified        Boolean            @default(false)
+  isVerified        Boolean             @default(false)
   lastLogin         DateTime?
-  phone             String?            @db.VarChar(20)
+  phone             String?             @db.VarChar(20)
   properties        Property[]
-  verificationToken verificationToken?
-
-  sentMessages     Message[] @relation("SentMessages")
-  receivedMessages Message[] @relation("ReceivedMessages")
+  verificationToken VerificationToken[]
 }
 
-model Message {
-  id         String @id @default(uuid())
-  sender     User   @relation("SentMessages", fields: [senderId], references: [id])
-  senderId   String
-  receiver   User   @relation("ReceivedMessages", fields: [receiverId], references: [id])
-  receiverId String
-
-  content   String
-  createdAt DateTime  @default(now())
-  readAt    DateTime?
-  edited    Boolean   @default(false)
-  deleted   Boolean   @default(false)
-
-  @@index([senderId, receiverId])
-  @@index([createdAt])
-}
-
-model verificationToken {
+model VerificationToken {
   id        String   @id @default(uuid())
   token     String   @unique
-  userId    String   @unique
-  createdAt DateTime @default(now())
+  userId    String
   expiresAt DateTime
+  createdAt DateTime @default(now())
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 /// This model contains an expression index which requires additional setup for migrations. Visit https://pris.ly/d/expression-indexes for more info.
 model Property {
-  id            String                   @id @default(uuid())
-  title         String                   @db.VarChar(200)
-  price         Float
-  location      String                   @db.VarChar(500)
-  units         Int
-  ownerId       String
-  amenities     String[]
-  createdAt     DateTime                 @default(now())
-  description   String
-  images        String[]
-  status        Status                   @default(AVAILABLE)
-  updatedAt     DateTime?                @updatedAt
-  views         Int                      @default(0)
-  type          PropertyType             @default(BEDSITTER)
-  deletedAt     DateTime?
-  search_vector Unsupported("tsvector")?
-  owner         User                     @relation(fields: [ownerId], references: [id], onDelete: Cascade)
-  propertyView  PropertyView[]
+  id           String         @id @default(uuid())
+  title        String         @db.VarChar(200)
+  price        Float
+  location     String         @db.VarChar(500)
+  units        Int
+  ownerId      String
+  amenities    String[]
+  createdAt    DateTime       @default(now())
+  description  String
+  images       String[]
+  status       Status         @default(AVAILABLE)
+  updatedAt    DateTime?      @updatedAt
+  views        Int            @default(0)
+  type         PropertyType   @default(BEDSITTER)
+  deletedAt    DateTime?
+  owner        User           @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  propertyView PropertyView[]
 
   @@unique([title, location, ownerId])
-  @@index([search_vector], map: "property_search_idx", type: Gin)
 }
 
 model PropertyView {
