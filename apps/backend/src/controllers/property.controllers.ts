@@ -9,7 +9,6 @@ import {
 import cloudinary from "../configs/cloudinary.configs.js";
 
 const prisma = new PrismaClient();
-const isDev = process.env.NODE_ENV === "development";
 
 type PropertyInput = {
 	title: string;
@@ -93,9 +92,10 @@ export const createProperty = async (
 			property: newProperty,
 		});
 	} catch (error) {
-		if (isDev) {
-			console.error("Error in createProperty", error);
-		}
+		console.error(
+			"Error in createProperty:",
+			error instanceof Error ? error.stack : error
+		);
 		return res.status(500).json({ error: "Internal server error" });
 	}
 };
@@ -237,9 +237,10 @@ export const getAllProperty = async (
 			data: property,
 		});
 	} catch (error) {
-		if (isDev) {
-			console.error("Error fetching all property", error);
-		}
+		console.error(
+			"Error fetching all property:",
+			error instanceof Error ? error.stack : error
+		);
 		return res.status(500).json({ error: "Internal server error" });
 	}
 };
@@ -314,9 +315,10 @@ export const getSinglePropertyListing = async (
 			data: property,
 		});
 	} catch (error) {
-		if (isDev) {
-			console.error("Error fetching single property listing", error);
-		}
+		console.error(
+			"Error fetching single property listing:",
+			error instanceof Error ? error.stack : error
+		);
 		return res.status(500).json({ error: "Internal server error" });
 	}
 };
@@ -375,9 +377,10 @@ export const softDeleteProperty = async (
 			data: propertyDeleted,
 		});
 	} catch (error) {
-		if (isDev) {
-			console.error("Error in deleteProperty", error);
-		}
+		console.error(
+			"Error in deleteProperty:",
+			error instanceof Error ? error.stack : error
+		);
 		return res.status(500).json({ error: "Internal server error" });
 	}
 };
@@ -542,9 +545,10 @@ export const getPropertyByOwner = async (
 			data: property,
 		});
 	} catch (error) {
-		if (isDev) {
-			console.error("Error getting owner's property", error);
-		}
+		console.error(
+			"Error getting owner's property:",
+			error instanceof Error ? error.stack : error
+		);
 		return res.status(500).json({ error: "Internal server error" });
 	}
 };

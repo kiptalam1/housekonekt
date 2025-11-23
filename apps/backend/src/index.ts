@@ -18,9 +18,14 @@ import { handleDMs } from "./socket/DMsHandler.js";
 
 const app = express();
 const httpServer = createServer(app);
+
+const prodOrigin = "https://housekonekt.onrender.com";
+const devOrigin = "http://localhost:3000";
+const allowedOrigins = [prodOrigin, devOrigin];
+
 export const io = new Server(httpServer, {
 	cors: {
-		origin: "http://localhost:3000",
+		origin: allowedOrigins,
 		methods: ["GET", "POST"],
 		credentials: true,
 	},
@@ -35,11 +40,7 @@ app.use(cookieParser());
 app.use(assignVisitorId);
 app.use(
 	cors({
-		origin: [
-			"https://housekonekt.onrender.com",
-
-			// "http://localhost:3000"
-		],
+		origin: allowedOrigins,
 		credentials: true,
 		methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
 		allowedHeaders: ["Content-Type", "Authorization"],

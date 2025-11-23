@@ -63,7 +63,9 @@ export const registerUser = async (
 			},
 		});
 
-		const verificationLink = `http://localhost:5000/api/auth/verify/${accountVerificationToken}`;
+		const verificationLink = isProd
+			? `https://housekonekt-backend.onrender.com/api/auth/verify/${accountVerificationToken}`
+			: `http://localhost:5000/api/auth/verify/${accountVerificationToken}`;
 		const emailSent = await sendEmail(
 			"onboarding@resend.dev",
 			newUser.email,
@@ -87,9 +89,10 @@ export const registerUser = async (
 			user: newUser,
 		});
 	} catch (error) {
-		if (!isProd) {
-			console.error("Error in register_user", error);
-		}
+		console.error(
+			"Error in registerUser:",
+			error instanceof Error ? error.stack : error
+		);
 		return res.status(500).json({ error: "Internal server error" });
 	}
 };
@@ -149,9 +152,10 @@ export const loginUser = async (
 			user: userWithoutPassword,
 		});
 	} catch (error) {
-		if (!isProd) {
-			console.error("Error in loginUser", error);
-		}
+		console.error(
+			"Error in loginUser:",
+			error instanceof Error ? error.stack : error
+		);
 		return res.status(500).json({ error: "Internal server error" });
 	}
 };
@@ -289,10 +293,10 @@ export const verifyUserEmail = async (
 
 		return res.status(200).json({ message: "Email verified successfully" });
 	} catch (error) {
-		if (!isProd) {
-			console.error("Error verifying user:", error);
-		}
-
-		console.error("Error verifying user:", error);
+		console.error(
+			"Error verifying user:",
+			error instanceof Error ? error.stack : error
+		);
+		return res.status(500).json({ error: "Internal server error" });
 	}
 };
