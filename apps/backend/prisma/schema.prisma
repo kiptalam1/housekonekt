@@ -12,6 +12,7 @@ model User {
   username          String              @db.VarChar(50)
   email             String              @unique @db.VarChar(100)
   password          String
+  public_id         String?
   role              Role                @default(USER)
   createdAt         DateTime            @default(now()) @db.Timestamp(6)
   updatedAt         DateTime?           @default(now()) @updatedAt @db.Timestamp(6)
@@ -24,6 +25,8 @@ model User {
   phone             String?             @db.VarChar(20)
   properties        Property[]
   verificationToken VerificationToken[]
+  sentMessages      Message[]           @relation("SentMessages")
+  receivedMessages  Message[]           @relation("ReceivedMessages")
 }
 
 model VerificationToken {
@@ -64,6 +67,17 @@ model PropertyView {
   visitorId  String
   viewedAt   DateTime @default(now())
   property   Property @relation(fields: [propertyId], references: [id])
+}
+
+model Message {
+  id         String   @id @default(uuid())
+  senderId   String
+  receiverId String
+  content    String
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  sender     User     @relation("SentMessages", fields: [senderId], references: [id], onDelete: Cascade)
+  receiver   User     @relation("ReceivedMessages", fields: [receiverId], references: [id], onDelete: Cascade)
 }
 
 enum Role {
